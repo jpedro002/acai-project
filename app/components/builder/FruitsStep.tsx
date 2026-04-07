@@ -1,5 +1,6 @@
 "use client";
 
+import { useCatalog } from "@/app/hooks/useCatalog";
 import Image from "next/image";
 
 interface FruitsStepProps {
@@ -11,44 +12,7 @@ interface FruitsStepProps {
 
 export default function FruitsStep({ selectedFruits, setSelectedFruits, onNext, onBack }: FruitsStepProps) {
     const maxFruits = 3;
-
-    const fruits = [
-        {
-            id: "morango",
-            title: "Morango",
-            description: "Docinho, suculento e colhido no ponto perfeito para o seu bowl.",
-            imageUrl: "https://lh3.googleusercontent.com/aida-public/AB6AXuDEdX7EyJW0o3Pl0TRjXpI0BMv7V9-6BPgSSkQpS0awLEivedQ6Wgs8RR6oUVAi44vWyAerWWGx1gpGpXQVTYiDRSX0PcslTAkFYlOnHg1BKtJ3KOPhH2QaKduFVV3Qb4Rv119enP_Fbuv2RKThj4ufp_D9OLV7F4EtB4eOyRC26M7kxn8ZRaVDtMWMQY8jRYJ9XTpEnHP71KZy1DI4swAfGuRstfI3sSBUVf-wyaAUiVKROB_i_elusYmJhiRaOXqLdXeT47x5OEkw",
-            imageAlt: "top-down macro shot of vibrant red sliced strawberries on a clean white surface with natural morning light"
-        },
-        {
-            id: "banana",
-            title: "Banana",
-            description: "A cremosidade clássica que todo açaí de respeito exige.",
-            imageUrl: "https://lh3.googleusercontent.com/aida-public/AB6AXuAeQBDyBGGrkJebCu7m15L1yCEvwJW2PpTX1XPcyme6i4rkTnd0r6-uGqu5ow4irS-_6CvHyA9VyET1DND5UrGNzxg9NBLm__u3OAwYVJEzU_tfIvISVe_Okekk0iz_v_yVruuNvJTXBlnD8uPABW4t2PcNd_6EixAjbBoIA8V6P9ntyIL-WZV_XMePQXkSglcASB1IcUFTOzHJq_wBk4P44lXylXWFeGFWcpFOevXVmw0VUczhvovKpXV55tFhNn0BXHIyNiaW0Ce3",
-            imageAlt: "close-up of perfectly ripe yellow banana slices arranged symmetrically on a minimalist dark background"
-        },
-        {
-            id: "kiwi",
-            title: "Kiwi",
-            description: "Um toque cítrico e refrescante para equilibrar o sabor.",
-            imageUrl: "https://lh3.googleusercontent.com/aida-public/AB6AXuD5gJTZdcKB3h6jHsYKt0e1KVDvR36155coac_rLoYl1mkyU4YGRnC7K6sySEEubcB_0d0LQ0adXf9D3cgBVQj_wnq-KJ_K8PudQATvxq_C8QidQaA80PXmDPSwx2W9bbu7vNv7x2BxWGBMiyIECCfBDooPwWXwsS0e2pEo4bb6oTrFVJuGk5dFDYIsSQnMMQBo0vum-2mnzCSYTUTRmAacveVrn-UKb5I4WY2cgpgx62ARmqkF-two5FOG7wcF8qdWzUZPUxJL0THs",
-            imageAlt: "refreshing top-down view of vibrant green kiwi slices showing intricate seed patterns and glistening texture"
-        },
-        {
-            id: "manga",
-            title: "Manga",
-            description: "Explosão tropical de doçura e textura aveludada.",
-            imageUrl: "https://lh3.googleusercontent.com/aida-public/AB6AXuAtXCdbZIo3Y_HkD5qkRm7ykpPhKWxORN0N_Vrc3I1hADpVrPzXZgLm3KjmdCz0UHs6iSkonoHMEO5eZe0Utugxyu-LNDzWSgtTTPdO4_N8UQr83khv0ZAW2AZFEjke0NcEGbGuJTKOCWdKt7MRaXmvi8pn7Sj-80RHYri3tlwgLT4AWJr7U8z45ev-kpAplbiBqm4qewIB35wNUweFAfSnloyJYkMzJ7nVLFMZnhPLY-2_sKRRZCrJeYHwwcgrIpJ1YY2-cJ5ktZn0",
-            imageAlt: "vibrant orange mango cubes in a high-key professional food photography style with soft shadows"
-        },
-        {
-            id: "abacaxi",
-            title: "Abacaxi",
-            description: "Acidez vibrante para quem ama um contraste intenso.",
-            imageUrl: "https://lh3.googleusercontent.com/aida-public/AB6AXuDHFy1yRRIYQ-IeZy2NdcCgazbpmsb-UcNpr8A5XFgrmuIicj-I5LFBM9ZDpwyICJBzD2Sejl6W5sfYGUf2xsy9Ye58Fq3TTRxmtFge5Acdwco4ScK3qbDyYUeoHDIIKodhjljW8qJmjKbgH0bM0MhNywLRg1BodTtF6mLphJfABG_pwyfpNHdD9f1XpeGmdJ0AvFvUNobDHcMAtAXv01umSG_cSD3WEh7vQEailZFb8I_McjU3Hu1K-fJh8iSVXX9QymXLcP_WX3g5",
-            imageAlt: "fresh golden pineapple chunks with water droplets on a neutral surface, bright tropical aesthetic"
-        }
-    ];
+    const { items: fruits, loading } = useCatalog("fruit");
 
     const toggleFruit = (fruitId: string) => {
         if (selectedFruits.includes(fruitId)) {

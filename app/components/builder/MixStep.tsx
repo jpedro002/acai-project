@@ -1,5 +1,7 @@
 "use client";
 
+import { useCatalog } from "@/app/hooks/useCatalog";
+
 interface MixStepProps {
     selectedMix: string[];
     setSelectedMix: (mix: string[]) => void;
@@ -9,26 +11,7 @@ interface MixStepProps {
 
 export default function MixStep({ selectedMix, setSelectedMix, onNext, onBack }: MixStepProps) {
     const maxMix = 2;
-
-    const mixItems = [
-        { id: "creme-cookies", title: "CREME DE COOKIES" },
-        { id: "doce-leite", title: "DOCE DE LEITE" },
-        { id: "finni-bananinha", title: "FINNI BANANINHA" },
-        { id: "mix-amendoin", title: "MIX AMENDOIN" },
-        { id: "mix-canudinho", title: "MIX CANUDINHO" },
-        { id: "mix-castanha", title: "MIX CASTANHA" },
-        { id: "mix-cereja", title: "MIX CEREJA" },
-        { id: "mix-chocobol", title: "MIX CHOCOBOL" },
-        { id: "mix-chocobol-bol-g", title: "MIX CHOCOBOL BOL G" },
-        { id: "mix-chocopower", title: "MIX CHOCOPOWER PRETO E BRANCO" },
-        { id: "mix-gotas-chocolate", title: "MIX GOTAS DE CHOCOLATE" },
-        { id: "mix-granola", title: "MIX GRANOLA" },
-        { id: "mix-granulado-chocolate", title: "MIX GRANULADO CHOCOLATE" },
-        { id: "mix-leite-em-po", title: "MIX LEITE EM PO" },
-        { id: "mix-marshmelow", title: "MIX MARSHMELOW" },
-        { id: "mix-mm", title: "MIX MM" },
-        { id: "pasta-amendoin", title: "PASTA DE AMENDOIN" }
-    ];
+    const { items: mixItems, loading } = useCatalog("mix");
 
     const toggleMix = (mixId: string) => {
         if (selectedMix.includes(mixId)) {

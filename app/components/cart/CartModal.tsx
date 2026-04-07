@@ -56,18 +56,18 @@ export default function CartModal({ isOpen, onClose }: CartModalProps) {
             />
 
             {/* Drawer Content */}
-            <div className="relative w-full max-w-md h-full bg-background dark:bg-tertiary shadow-2xl animate-in slide-in-from-right duration-300 overflow-y-auto">
-                <header className="flex items-center px-6 h-16 w-full sticky top-0 z-50 bg-[#f9f9f9] dark:bg-[#1b0018] no-border tonal-shift bg-surface-container-low shadow-sm">
+            <div className="relative w-full max-w-md h-full bg-background shadow-2xl animate-in slide-in-from-right duration-300 overflow-y-auto">
+                <header className="flex items-center px-6 h-16 w-full sticky top-0 z-50 bg-[#f9f9f9] no-border tonal-shift bg-surface-container-low shadow-sm">
                     <div className="flex items-center gap-4">
                         <button
                             onClick={onClose}
                             className="hover:opacity-80 transition-opacity scale-95 active:scale-90 transition-transform"
                         >
-                            <span className="material-symbols-outlined text-[#3D0B37] dark:text-[#FFB800]">
+                            <span className="material-symbols-outlined text-[#3D0B37]">
                                 close
                             </span>
                         </button>
-                        <h1 className="font-['Montserrat'] font-bold tracking-tight text-lg text-[#3D0B37] dark:text-[#FFB800]">
+                        <h1 className="font-['Montserrat'] font-bold tracking-tight text-lg text-[#3D0B37]">
                             Meu Carrinho
                         </h1>
                     </div>

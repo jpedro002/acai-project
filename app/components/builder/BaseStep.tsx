@@ -1,5 +1,6 @@
 "use client";
 
+import { useCatalog } from "@/app/hooks/useCatalog";
 import Image from "next/image";
 import BaseCard from "./BaseCard";
 
@@ -12,44 +13,13 @@ interface BaseStepProps {
 }
 
 export default function BaseStep({ selectedBase, setSelectedBase, selectedSize, setSelectedSize, onNext }: BaseStepProps) {
+    const { items: bases, loading } = useCatalog("base");
+
     const sizes = [
         { id: "300", label: "300ml" },
         { id: "500", label: "500ml" },
         { id: "700", label: "700ml" },
         { id: "1000", label: "1 litro" }
-    ];
-
-    const bases = [
-        {
-            id: "especial",
-            title: "Açaí Especial",
-            description: "A receita original do Pará. Intenso, cremoso e pura energia.",
-            prices: { "300": 15.90, "500": 22.90, "700": 28.90, "1000": 38.90 },
-            imageUrl: "https://lh3.googleusercontent.com/aida-public/AB6AXuCNEP2OH8aL6R3rOfF3krYmZL0v0tUXwChoJmA7tM5rAuAALnLHfQfBpCjH8GPJGkZds6GNgn3QGo3h-R8IiTGjEeqz3X9y1pUmpclWtrjbDzZZH8SlIZ09SCXcdfuTFzSwGDOxpIGltwNYijwIN_2BFHA0egWbM6FLPX-YjYFVbcYkJu6nZMTqCogGzogIVh5syCGFJhXlDDI-bPKW7cL-4OQL7jvTlJloG5oLTP5uc5VGHXNjI81s44Y93Fu7NC6A_gyuEOMYp2RQ",
-            imageAlt: "rich deep purple acai berry cream texture in a bowl",
-            badge: "CLÁSSICO",
-            imageBgClass: "bg-tertiary-container"
-        },
-        {
-            id: "fit",
-            title: "Açaí Fit",
-            description: "Todo o sabor e benefícios do açaí, sem açúcar (adoçado com stevia).",
-            prices: { "300": 18.90, "500": 25.90, "700": 31.90, "1000": 42.90 },
-            imageUrl: "https://lh3.googleusercontent.com/aida-public/AB6AXuDNTqFCC_OasS6uxCGXPPVX8u7e-AiKEcTUtTAtgN5w1D5ORk4EFnCHe4Q5gR4sp_TKEfikhBiXyiGOTv0V8wpeq4ivxjzOpGSx4XYDyZxigvC-oOgwvty4xujLVp0tx-ui0MuhzLJ0_hMFdySpI63JIMUgg2YjXvOBZiQ0w6wnot5ujU2_-KveAXIwXmH9bgZ_x1wi9-vtTtgO4qc4fGHdjeOPNvGUvNmhlgP42zm5lUjpyFuiW-8sDN_Lm110lEw0d0TIfcZI0NOC",
-            imageAlt: "vibrant deep purple acai blend in a glass bowl",
-            badge: "ZERO AÇÚCAR",
-            imageBgClass: "bg-surface-container-high"
-        },
-        {
-            id: "sem-acai",
-            title: "Sem Açaí",
-            description: "Explore outras opções incríveis de cremes como sua base.",
-            prices: { "300": 16.90, "500": 23.90, "700": 29.90, "1000": 39.90 },
-            imageUrl: "https://lh3.googleusercontent.com/aida-public/AB6AXuAJfyZ9tNfdFW8d3llc_kOFdyck2JzFJvCbECWRGIPEHeFMWgziAX8rYvinPSLcoCnhBKrjYSJ20F2G7_t4kHD-D6RO0FyET6m85onROFc8v2O2MAmAqzpJaOErbsBK4uQorVPb6WZt63ynE4fMIyx_5CVm60DiIQogsr7RsRmG8XNrHKoZzUXYD5i2ukbsbw0cRWUSw5CLrwbXZXSqvFkzNf2XOA1XaoGP-mD9c3qoCV6Y4ZnOBT-n29bP4dojJvUOlKAGmmfgAG7n",
-            imageAlt: "pale yellow creamy cupuacu fruit pulp texture",
-            badge: "DIFERENCIADO",
-            imageBgClass: "bg-secondary-container"
-        }
     ];
 
     const formatPrice = (price: number) => {

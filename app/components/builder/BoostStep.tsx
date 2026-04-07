@@ -1,4 +1,5 @@
 "use client";
+import { useCatalog } from "@/app/hooks/useCatalog";
 
 import { useState } from "react";
 
@@ -18,35 +19,11 @@ interface BoostStepProps {
     onNext: () => void;
     onBack: () => void;
 }
-
-const items: BoostItem[] = [
-    {
-        id: "extra-nutella",
-        name: "Extra Nutella",
-        price: 3.00,
-        image: "https://lh3.googleusercontent.com/aida-public/AB6AXuAybnoISH29HMwq1H4_hFI7ECBM5qSD1LEOWKOwihHCjrIGju2J6htiZDy3nCJR6bNPfOE6FVlFF-9uXCpiegG6OjdCP3rPmF2fXAdYjLBoEs6uBZHTqws7VsFUeOoFV3PYLVuiaJ3gyvky50vYRMirxRsKurH4pAM8Yq4BF4R2OyNidj3WiUgY81I-TUImuJ6uglDaMmhDuHsAz6nIqWfKqiY--fFoWG3ulTHPfqBJSg1_AHpLvELYvKV2y-A3pqLuzr-ZidhkQ_nN",
-        alt: "close up view of creamy rich chocolate hazelnut spread with a spoon"
-    },
-    {
-        id: "mms",
-        name: "M&Ms",
-        price: 2.50,
-        image: "https://lh3.googleusercontent.com/aida-public/AB6AXuDvpK5-dou9F74QgvEP3RqUYzp1Ed7xQEp-yS5wpuPtt-3Z-ikHeXoyDS9zdmqohSJmhfNgVPZm_POg-BKSn7JhjllMf6PUEQJUU9xH7ClfRfSVKIVFRw16Qn-LXWc1HRXxPy5xFrGyRuiHYk3DtHgPJccwglKScDJ2ha56qWJNp_x-DYtnZ4z_WjZvLdId8HqQbq1g-Ngtdr6F-y6osryKQqAIWCBNDdpHiOFqaPD4YCbLQtUwXSqjacukchL5aBYC9yr6dJiJUd1u",
-        alt: "pile of colorful candy coated chocolate buttons spilling out"
-    },
-    {
-        id: "oreo",
-        name: "Oreo",
-        price: 2.00,
-        image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBOJkqzx1Zk5eWMz0VXtVKdAt1nZNo7fr15WsqhleNF50VYqvb6CU3QadDc3sVSTgQp28SPSHbJqRNvxppOXANDCVzYZR5WRS-9NDtv82QgGxl-_3TGmDqDc--jtmCNMAyTImaoKcHaA8vVf_CEVIpFACpErMjIBW5W5MdfZ5zziO_OCL6ODlfNqeEVzwdPeMZhTiZMyX9Ek2SztwtMM3yKPgmK5KNN0eQTTMencFy7RyyDFUKXzs9z3NfwA9mgYGLri2XiTi_iouMT",
-        alt: "stack of chocolate sandwich cookies with white cream filling"
-    }
-];
-
 export default function BoostStep({ boostItems, setBoostItems, observations, setObservations, onNext, onBack }: BoostStepProps) {
     const handleIncrement = (id: string) => {
         setBoostItems({ ...boostItems, [id]: (boostItems[id] || 0) + 1 });
     };
+    const { items, loading } = useCatalog("boost");
 
     const handleDecrement = (id: string) => {
         if (boostItems[id] > 0) {

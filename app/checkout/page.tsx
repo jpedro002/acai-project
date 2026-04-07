@@ -2,7 +2,28 @@
 
 import LayoutHeader from '@/app/components/shared/LayoutHeader';
 
+import { collection, addDoc } from "firebase/firestore";
+import { db } from "@/lib/firebase/client";
+import { useRouter } from "next/navigation";
+
 export default function CheckoutPage() {
+  const router = useRouter();
+  const handleConfirmOrder = async () => {
+    try {
+      if (!db) {
+        throw new Error("Firestore instance not initialized");
+      }
+      await addDoc(collection(db, "orders"), {
+        status: "pending",
+        total: 49.90,
+        createdAt: new Date(),
+      });
+      alert("Order placed successfully!");
+      router.push("/");
+    } catch (e) {
+      console.error(e);
+    }
+  };
   return (
     <>
       <LayoutHeader />
@@ -107,7 +128,7 @@ export default function CheckoutPage() {
 
         {/* Call to Action */}
         <div className="pt-4">
-          <button className="w-full bg-inverse-primary text-on-primary-fixed py-6 rounded-full font-headline font-extrabold text-xl shadow-[0_12px_48px_rgba(255,184,0,0.3)] hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3 group">
+          <button onClick={handleConfirmOrder} className="w-full bg-inverse-primary text-on-primary-fixed py-6 rounded-full font-headline font-extrabold text-xl shadow-[0_12px_48px_rgba(255,184,0,0.3)] hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3 group">
             Confirmar Pedido
             <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">chevron_right</span>
           </button>

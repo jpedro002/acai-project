@@ -1,5 +1,6 @@
 "use client";
 
+import { useCatalog } from "@/app/hooks/useCatalog";
 import Image from "next/image";
 
 interface CreamsStepProps {
@@ -11,59 +12,7 @@ interface CreamsStepProps {
 
 export default function CreamsStep({ selectedCreams, setSelectedCreams, onNext, onBack }: CreamsStepProps) {
     const maxCreams = 3;
-
-    const creams = [
-        {
-            id: "cupuacu",
-            title: "CREME CUPUAÇU",
-            description: "Tropical e refrescante",
-            imageUrl: "https://lh3.googleusercontent.com/aida-public/AB6AXuCW4c2Mhn6b7zmVckeQViBkqnPqJJrW8a51ZI35jfNywMJ3oTJQ36Y-RQHezLHSYIMs_M8NR8tgAb4Jxk6fB4EMawjApJuhXSvoTq3wmR5H6AOk98LcjROcNFfdW1Ypv6s7EB5UZt5x7ShMvz2-EiOkWHMCIlvAivrmkuU1FzmQqioEsZDGt1MjnDl1ogb4_7N2cHoDGMB-tm6LIcaZukdFP15MK_EjhpXu7puvVf4A67iyLBwb-UpMzxFi4VM9DD5o8psPamMMYnTJ",
-            imageAlt: "thick velvety white cupuacu cream in a glass bowl"
-        },
-        {
-            id: "ninho",
-            title: "CREME DE NINHO",
-            description: "O clássico que amamos",
-            imageUrl: "https://lh3.googleusercontent.com/aida-public/AB6AXuAnUB5fX7EjxxdbCT66OYbUZ0I0C221A0yf8X-qOE3tbkaUWp2dDa6sr-q87i4iLr8-Bb01uWcxw8OgLiImyJKr1Gm5oLa0OwhZPUPOA-h6fquIjeAgZahC_sdt1DPwd1uojMxJzNibF3J1HongMx_mfAAMRxcyE6CBK_HSGGkd0250W9uWiRjQHh3uulc3hnYjgW4HhnZSSfARrT46SAIYNzOEJgwDndqcfPJiZsqOOfMRuLe0eAFWs4eP-88Bd51ZtdEtoz7B9KUn",
-            imageAlt: "rich creamy yellowish milk powder spread"
-        },
-        {
-            id: "maracuja",
-            title: "CREME MARACUJÁ",
-            description: "Azedinho equilibrado",
-            imageUrl: "https://lh3.googleusercontent.com/aida-public/AB6AXuD8O5MkrAZPIklG65Q03PwSaPlRH86dHlBgATYPLgoQshoTx9xori20Zc0_NVcxxyY1SxY4-WR8yKGcTa1PFFVVnTKHjbYfqrzVzLR5L6mGn62_cT6TMNiZjDVuEWjKxJhFy67PsMhA_DrPhcgCl6DrTdo-Lyyg8lU-KShz0E8t00uGvX-fp2EQpb_ayB-HkXgn6gvY8B1St_OFQ_A482g6Kni_3jNtmAAWZlgTGtbewoI7RJZU7nOViZOaLf2DURX13ZMdEM_1d7cR",
-            imageAlt: "vibrant yellow passion fruit mousse"
-        },
-        {
-            id: "morango",
-            title: "CREME MORANGO",
-            description: "Frescor da fruta",
-            imageUrl: "https://lh3.googleusercontent.com/aida-public/AB6AXuClqyB5mwWbjtiXXGAZwoWILBZrPpWHovgDHRJQ7QKL0zmSRlURtuksZpC9trylg0GfZWTK7SYUz02BUY-ZU3hIJha3YUcTWd6JR3DRI1kYjPiAf0JFbJhxqmVXL8aDn48e74R7R0rKKnIKr2Cj4KT5epdIcCx77JqWCtmjLLH5EI4SAfkXPgIqixAT-MoLP7KJXa-SG4nM-eKcPZJmK2rgBPvpmDfwF9bY9puAJIIli2eMbneOGVLRZiXTFQ_WPm9WblALzMAllNAT",
-            imageAlt: "soft pink strawberry cream with visible fruit chunks"
-        },
-        {
-            id: "oreo",
-            title: "CREME OREO",
-            description: "Crocante e cremoso",
-            imageUrl: "https://lh3.googleusercontent.com/aida-public/AB6AXuAqm9SNniKHXQt_qzCpekrqHmUm_8oToB2Hf0ikflJnqqJWy8-Zgt8U2UxpsBI0VexHQyFRV2Tx0wrP5PfeJYI1TrKDgFCb9NMGUpiK-rqSg6vbYGI6_sn93M4paPlMTFafOUopyLvxPJ_CdTrvuHFrZP_kuRciNtooj1rQtQb0iH8gkcMCKGLmRZgyPkfcD6toDbVduF8YI5CuwcHIzf471kFK84mJlhNbyPjw8_eRJcB8eqPveEKvMJRUx2ZaobcCeLtW_xNlb9bl",
-            imageAlt: "white vanilla cream mixed with dark chocolate cookie crumbles"
-        },
-        {
-            id: "pacoquita",
-            title: "CREME PAÇOQUITA",
-            description: "Sabor intenso de amendoim",
-            imageUrl: "https://lh3.googleusercontent.com/aida-public/AB6AXuB6TQM3_jx1-DRLAbBR0hlqX_XXir3OSiG-pWdcVbiHoQ0_MMQpbjbB-IlKCa-oNXWhvfru80anO0ZUcDCI0n2iA1NbvyR7IFPPEVxMUsbiYz0TNINIFYb_dRYSodZ7y_T3whvynIoorbS35-Mu7u4UOSzM6pLyrdS_gwItGOio2K_lrNWeUiDOxd-n5hWQ957r-rexSBsaOG3IPw4OkW6mrC8MAzJuPCPNu-GxbeLIacWsgPO8bQvUcuGHmTCvKtpciybJljnHXD4e",
-            imageAlt: "warm beige peanut cream with visible ground nuts"
-        },
-        {
-            id: "tapioca",
-            title: "TAPIOCA CREMOSA",
-            description: "Textura única e sabor autêntico da Amazônia",
-            imageUrl: "https://lh3.googleusercontent.com/aida-public/AB6AXuAlLjmk6LYbgppJcCnXMb-aYlNLlQYWK1wCsbeO4-3vp7hHxwRXS3C4iP9vkjDKOgvSSGC_jCoSTqZGXGZfQc6JusZsyw3JkMl7GvQB7KYyciiNXkzMtvrkS2DVWbnrEXns7IfS4b1nVLASgqrBsUvzB1uylp-GMhwJWIPA5fe8mjvqA3O5iF-xfUtFn3E8si4ljsaB_T27huXJauyRuzyeQc69NzrrclOInfJJYesOJawfb0Q-VOoJEOLkBYq9IpbMYme3xqLoup47",
-            imageAlt: "traditional brazilian tapioca cream with visible small translucent pearls",
-            isFeatured: true
-        }
-    ];
+    const { items: creams, loading } = useCatalog("cream");
 
     const toggleCream = (creamId: string) => {
         if (selectedCreams.includes(creamId)) {
