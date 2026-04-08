@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import LayoutSelector from "./components/LayoutSelector";
+import LayoutV1Skeleton from "./components/layouts/LayoutV1Skeleton";
 
 interface PageProps {
   searchParams?: Promise<{
@@ -12,7 +13,7 @@ export default async function Home({ searchParams }: PageProps) {
   const layout = params?.layout || "v1";
 
   return (
-    <Suspense fallback={<div>Carregando...</div>}>
+    <Suspense fallback={<LayoutV1Skeleton />}>
       <LayoutSelector layout={layout} />
     </Suspense>
   );
