@@ -1,15 +1,6 @@
 "use client";
 import { useCatalog } from "@/app/hooks/useCatalog";
-
-import { useState } from "react";
-
-interface BoostItem {
-    id: string;
-    name: string;
-    price: number;
-    image: string;
-    alt: string;
-}
+import builderData from "@/app/data/builder-data.json";
 
 interface BoostStepProps {
     boostItems: Record<string, number>;
@@ -23,7 +14,7 @@ export default function BoostStep({ boostItems, setBoostItems, observations, set
     const handleIncrement = (id: string) => {
         setBoostItems({ ...boostItems, [id]: (boostItems[id] || 0) + 1 });
     };
-    const { items, loading } = useCatalog("boost");
+    const { items } = useCatalog("boost", builderData.builder.boosts);
 
     const handleDecrement = (id: string) => {
         if (boostItems[id] > 0) {
@@ -42,8 +33,8 @@ export default function BoostStep({ boostItems, setBoostItems, observations, set
                 {items.map((item) => (
                     <div key={item.id} className="flex items-center gap-4 bg-surface-container-lowest p-4 rounded-xl shadow-[0_32px_48px_rgba(26,28,28,0.04)]">
                         <div className="flex items-center gap-4 flex-1">
-                            <div className="bg-center bg-no-repeat aspect-square bg-cover rounded-lg size-16" 
-                                style={{ backgroundImage: `url("${item.image}")` }} 
+                            <div className="bg-center bg-no-repeat aspect-square bg-cover rounded-lg size-16"
+                                style={{ backgroundImage: `url("${item.image}")` }}
                                 aria-label={item.alt}>
                             </div>
                             <div className="flex flex-col justify-center">
@@ -64,7 +55,7 @@ export default function BoostStep({ boostItems, setBoostItems, observations, set
 
             <div className="mt-8">
                 <label className="block text-on-surface font-headline font-bold mb-3 text-lg">Observações do Pedido</label>
-                <textarea 
+                <textarea
                     value={observations}
                     onChange={(e) => setObservations(e.target.value)}
                     placeholder="Ex: Tirar o morango, colocar extra leite condensado..."
@@ -73,14 +64,14 @@ export default function BoostStep({ boostItems, setBoostItems, observations, set
             </div>
 
             <div className="fixed bottom-0 left-0 right-0 max-w-5xl mx-auto bg-surface/80 backdrop-blur-[20px] pb-8 pt-4 px-6 shadow-[0_-8px_32px_rgba(26,28,28,0.04)] z-50 flex gap-4 md:gap-8 justify-between items-center">
-                 <button 
+                <button
                     onClick={onBack}
                     className="whitespace-nowrap bg-transparent text-tertiary px-6 py-4 rounded-full font-headline font-bold text-sm tracking-wide uppercase hover:bg-surface-container transition-colors duration-200"
                 >
                     Voltar
                 </button>
                 <div className="flex flex-col w-full">
-                    <button 
+                    <button
                         onClick={onNext}
                         className="w-full bg-[#FFB800] text-[#3D0B37] rounded-full py-4 px-6 font-headline font-bold text-sm tracking-wide uppercase hover:scale-[1.02] hover:shadow-[0_8px_32px_rgba(255,184,0,0.4)] transition-all"
                     >

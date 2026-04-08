@@ -1,7 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import builderData from "@/app/data/builder-data.json";
+import { useConfigDoc } from "@/app/hooks/useConfigDoc";
+import { addCartItemAtom } from "@/app/state/cartAtoms";
+import { useSetAtom } from "jotai";
+import { useRouter } from "next/navigation";
 import LayoutHeader from "../components/shared/LayoutHeader";
 import BaseStep from "../components/builder/BaseStep";
 import CreamsStep from "../components/builder/CreamsStep";
@@ -11,6 +15,8 @@ import MixStep from "../components/builder/MixStep";
 import BoostStep from "../components/builder/BoostStep";
 
 export default function BuilderPage() {
+    const router = useRouter();
+    const addCartItem = useSetAtom(addCartItemAtom);
     const [step, setStep] = useState(1);
 
     // Base Step State
@@ -24,7 +30,7 @@ export default function BuilderPage() {
     const [selectedFruits, setSelectedFruits] = useState<string[]>([]);
 
     // Toppings Step State
-    const [selectedTopping, setSelectedTopping] = useState<string | null>(null);
+    const [selectedToppings, setSelectedToppings] = useState<string[]>([]);
 
     // Mix Step State
     const [selectedMix, setSelectedMix] = useState<string[]>([]);
@@ -32,6 +38,99 @@ export default function BuilderPage() {
     // Boost Step State
     const [boostItems, setBoostItems] = useState<Record<string, number>>({});
     const [observations, setObservations] = useState<string>("");
+
+    const { data: builderConfig } = useConfigDoc("builder", {
+        sizes: builderData.builder.sizes,
+        limits: builderData.builder.limits,
+    });
+
+    const getLimitsForSize = (sizeId: string) => {
+        const size = builderConfig.sizes?.find((item: { id: string; limits?: { creams: number; fruits: number; toppings: number; mix: number } }) => item.id === sizeId);
+        return size?.limits ?? builderConfig.limits ?? builderData.builder.limits;
+    };
+
+    const selectedSizeLimits = getLimitsForSize(selectedSize);
+
+    const handleSelectedSizeChange = (sizeId: string) => {
+        const limits = getLimitsForSize(sizeId);
+        setSelectedSize(sizeId);
+        setSelectedCreams((prev) => prev.slice(0, limits.creams));
+        setSelectedFruits((prev) => prev.slice(0, limits.fruits));
+        setSelectedToppings((prev) => prev.slice(0, limits.toppings));
+        setSelectedMix((prev) => prev.slice(0, limits.mix));
+    };
+
+    const getTitlesByIds = (
+        ids: string[],
+        source: Array<{ id: string; title?: string; name?: string }>
+    ) => {
+        return ids
+            .map((id) => source.find((item) => item.id === id))
+            .filter(Boolean)
+            .map((item) => item?.title ?? item?.name ?? "")
+            .filter((value) => value.length > 0);
+    };
+
+    const handleFinishOrder = () => {
+        if (!selectedBase) {
+            alert("Escolha uma base antes de finalizar.");
+            return;
+        }
+
+        const selectedBaseData = builderData.builder.bases.find((base) => base.id === selectedBase);
+
+        if (!selectedBaseData) {
+            alert("Não foi possível montar o item selecionado.");
+            return;
+        }
+
+        const selectedSizeData = builderConfig.sizes.find((size: { id: string; label: string }) => size.id === selectedSize);
+        const creams = getTitlesByIds(selectedCreams, builderData.builder.creams);
+        const fruits = getTitlesByIds(selectedFruits, builderData.builder.fruits);
+        const toppings = getTitlesByIds(selectedToppings, builderData.builder.toppings);
+        const mix = getTitlesByIds(selectedMix, builderData.builder.mix);
+
+        const boostsTotal = Object.entries(boostItems).reduce((sum, [boostId, quantity]) => {
+            const boost = builderData.builder.boosts.find((item) => item.id === boostId);
+            if (!boost) {
+                return sum;
+            }
+
+            return sum + boost.price * quantity;
+        }, 0);
+
+        const basePrice = selectedBaseData.prices[selectedSize as keyof typeof selectedBaseData.prices] ?? 0;
+        const totalPrice = Number((basePrice + boostsTotal).toFixed(2));
+
+        const flavorSections = [
+            creams.length ? `Cremes: ${creams.join(', ')}` : null,
+            fruits.length ? `Frutas: ${fruits.join(', ')}` : null,
+            toppings.length ? `Coberturas: ${toppings.join(', ')}` : null,
+            mix.length ? `Mix: ${mix.join(', ')}` : null,
+        ].filter(Boolean);
+
+        addCartItem({
+            kind: "acai",
+            name: `Açaí ${selectedSizeData?.label ?? selectedSize}`,
+            flavor: flavorSections.join(" | ") || selectedBaseData.title,
+            size: selectedSizeData?.label ?? selectedSize,
+            price: totalPrice,
+            image: selectedBaseData.imageUrl,
+            selections: {
+                baseId: selectedBaseData.id,
+                baseTitle: selectedBaseData.title,
+                creams,
+                fruits,
+                toppings,
+                mix,
+                boosts: boostItems,
+                observations: observations.trim() || undefined,
+            },
+        });
+
+        alert("Item adicionado ao carrinho com sucesso!");
+        router.push("/meu-carrinho");
+    };
 
     return (
         <div className="bg-background font-body text-on-surface antialiased overflow-x-hidden min-h-screen">
@@ -53,7 +152,7 @@ export default function BuilderPage() {
                         selectedBase={selectedBase}
                         setSelectedBase={setSelectedBase}
                         selectedSize={selectedSize}
-                        setSelectedSize={setSelectedSize}
+                        setSelectedSize={handleSelectedSizeChange}
                         onNext={() => setStep(2)}
                     />
                 )}
@@ -62,6 +161,7 @@ export default function BuilderPage() {
                     <CreamsStep
                         selectedCreams={selectedCreams}
                         setSelectedCreams={setSelectedCreams}
+                        maxCreams={selectedSizeLimits.creams}
                         onNext={() => setStep(3)}
                         onBack={() => setStep(1)}
                     />
@@ -71,6 +171,7 @@ export default function BuilderPage() {
                     <FruitsStep
                         selectedFruits={selectedFruits}
                         setSelectedFruits={setSelectedFruits}
+                        maxFruits={selectedSizeLimits.fruits}
                         onNext={() => setStep(4)}
                         onBack={() => setStep(2)}
                     />
@@ -78,8 +179,9 @@ export default function BuilderPage() {
 
                 {step === 4 && (
                     <ToppingsStep
-                        selectedTopping={selectedTopping}
-                        setSelectedTopping={setSelectedTopping}
+                        selectedToppings={selectedToppings}
+                        setSelectedToppings={setSelectedToppings}
+                        maxToppings={selectedSizeLimits.toppings}
                         onNext={() => setStep(5)}
                         onBack={() => setStep(3)}
                     />
@@ -89,6 +191,7 @@ export default function BuilderPage() {
                     <MixStep
                         selectedMix={selectedMix}
                         setSelectedMix={setSelectedMix}
+                        maxMix={selectedSizeLimits.mix}
                         onNext={() => setStep(6)}
                         onBack={() => setStep(4)}
                     />
@@ -100,7 +203,7 @@ export default function BuilderPage() {
                         setBoostItems={setBoostItems}
                         observations={observations}
                         setObservations={setObservations}
-                        onNext={() => alert("Pedido finalizado com sucesso!")}
+                        onNext={handleFinishOrder}
                         onBack={() => setStep(5)}
                     />
                 )}

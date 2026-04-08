@@ -1,17 +1,30 @@
 "use client";
 
 import { useCatalog } from "@/app/hooks/useCatalog";
+import builderData from "@/app/data/builder-data.json";
 import Image from "next/image";
 
 interface ToppingsStepProps {
-    selectedTopping: string | null;
-    setSelectedTopping: (topping: string) => void;
+    selectedToppings: string[];
+    setSelectedToppings: (toppings: string[]) => void;
+    maxToppings: number;
     onNext: () => void;
     onBack: () => void;
 }
 
-export default function ToppingsStep({ selectedTopping, setSelectedTopping, onNext, onBack }: ToppingsStepProps) {
-    const { items: toppings, loading } = useCatalog("topping");
+export default function ToppingsStep({ selectedToppings, setSelectedToppings, maxToppings, onNext, onBack }: ToppingsStepProps) {
+    const { items: toppings } = useCatalog("topping", builderData.builder.toppings);
+
+    const toggleTopping = (toppingId: string) => {
+        if (selectedToppings.includes(toppingId)) {
+            setSelectedToppings(selectedToppings.filter(id => id !== toppingId));
+            return;
+        }
+
+        if (selectedToppings.length < maxToppings) {
+            setSelectedToppings([...selectedToppings, toppingId]);
+        }
+    };
 
     return (
         <div className="w-full">
@@ -22,18 +35,18 @@ export default function ToppingsStep({ selectedTopping, setSelectedTopping, onNe
                         <p className="font-label text-[10px] font-bold uppercase tracking-widest text-[#FFB800] mb-2">Passo 4 de 7</p>
                         <h2 className="text-3xl font-black text-tertiary tracking-tight">Escolha sua Cobertura</h2>
                     </div>
-                    <div className="text-on-surface-variant font-body text-sm font-medium">Escolha até 1 item</div>
+                    <div className="text-on-surface-variant font-body text-sm font-medium">Até {maxToppings} opções ({selectedToppings.length}/{maxToppings})</div>
                 </div>
             </div>
 
             {/* Options List */}
             <div className="space-y-6 mb-12">
                 {toppings.map((topping) => {
-                    const isSelected = selectedTopping === topping.id;
+                    const isSelected = selectedToppings.includes(topping.id);
                     return (
                         <div
                             key={topping.id}
-                            onClick={() => setSelectedTopping(topping.id)}
+                            onClick={() => toggleTopping(topping.id)}
                             className={`relative group cursor-pointer active:scale-95 transition-transform duration-200 editorial-shadow rounded-xl overflow-hidden bg-surface-container-lowest ${isSelected ? 'ring-2 ring-inverse-primary' : ''}`}
                         >
                             <div className="aspect-[16/7] w-full overflow-hidden relative">
@@ -57,6 +70,25 @@ export default function ToppingsStep({ selectedTopping, setSelectedTopping, onNe
                         </div>
                     );
                 })}
+            </div>
+
+            {/* CTA Section */}
+            <div className="flex flex-col md:flex-row items-center justify-between gap-6 bg-tertiary p-8 rounded-[32px] text-white">
+                <button
+                    onClick={onBack}
+                    className="w-full md:w-auto bg-transparent border-2 border-white/20 text-white px-10 py-4 rounded-full font-headline font-bold text-lg hover:bg-white/10 transition-colors duration-200"
+                >
+                    Voltar
+                </button>
+
+                <div className="flex flex-col md:items-end text-center md:text-right w-full md:w-auto">
+                    <button
+                        onClick={onNext}
+                        className="w-full md:w-auto bg-[#FFB800] text-[#3D0B37] px-12 py-4 rounded-full font-headline font-black text-xl hover:bg-[#FFD15C] transition-colors duration-200 shadow-[0_8px_24px_rgba(255,184,0,0.4)] hover:shadow-[0_12px_32px_rgba(255,184,0,0.6)]"
+                    >
+                        Continuar
+                    </button>
+                </div>
             </div>
         </div>
     );

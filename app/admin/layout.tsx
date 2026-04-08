@@ -1,15 +1,47 @@
-'use client';
+import Link from 'next/link';
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
+import { adminAuth, adminDb } from '@/lib/firebase/admin';
+import { ADMIN_SESSION_COOKIE_NAME } from '@/lib/auth/session';
+import AdminLogoutButton from './components/AdminLogoutButton';
 
-import { useEffect } from 'react';
+const getAllowedAdminEmails = () => {
+  const rawValue = process.env.ADMIN_ALLOWED_EMAILS ?? 'admin@acai.com';
+  return rawValue
+    .split(',')
+    .map((email) => email.trim().toLowerCase())
+    .filter(Boolean);
+};
 
-export default function AdminLayout({
+export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  useEffect(() => {
-    localStorage.setItem('hasVisitedAdmin', 'true');
-  }, []);
+  const cookieStore = await cookies();
+  const sessionCookie = cookieStore.get(ADMIN_SESSION_COOKIE_NAME)?.value;
+
+  if (!sessionCookie) {
+    redirect('/admin-login');
+  }
+
+  try {
+    const decoded = await adminAuth.verifySessionCookie(sessionCookie, true);
+    const userDoc = await adminDb.collection('users').doc(decoded.uid).get();
+    const role = userDoc.data()?.role;
+    const normalizedEmail = decoded.email?.toLowerCase() ?? '';
+    const isAllowedEmail = normalizedEmail
+      ? getAllowedAdminEmails().includes(normalizedEmail)
+      : false;
+    const isAdmin = decoded.admin === true || role === 'admin' || isAllowedEmail;
+
+    if (!isAdmin) {
+      redirect('/admin-login');
+    }
+  } catch (error) {
+    console.error('Falha ao validar sessão admin:', error);
+    redirect('/admin-login');
+  }
 
   return (
     <div className="flex h-screen bg-surface-container-low font-body text-on-surface">
@@ -19,20 +51,18 @@ export default function AdminLayout({
           <h2 className="text-xl font-bold font-headline text-primary">Point dos amigos Admin</h2>
         </div>
         <nav className="flex-1 px-4 flex flex-col gap-2">
-          <a href="/admin" className="p-3 bg-primary-container text-on-primary-container rounded-lg font-bold">
+          <Link href="/admin" className="p-3 bg-primary-container text-on-primary-container rounded-lg font-bold">
             Dashboard
-          </a>
-          <a href="#" className="p-3 hover:bg-surface-variant rounded-lg transition-colors">
+          </Link>
+          <button type="button" className="p-3 text-left hover:bg-surface-variant rounded-lg transition-colors" disabled>
             Pedidos
-          </a>
-          <a href="#" className="p-3 hover:bg-surface-variant rounded-lg transition-colors">
+          </button>
+          <button type="button" className="p-3 text-left hover:bg-surface-variant rounded-lg transition-colors" disabled>
             Produtos
-          </a>
+          </button>
         </nav>
         <div className="p-4 border-t border-outline-variant">
-          <a href="/" className="p-3 w-full text-center block text-error font-bold hover:bg-error-container rounded-lg">
-            Sair
-          </a>
+          <AdminLogoutButton />
         </div>
       </aside>
 

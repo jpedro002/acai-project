@@ -2,17 +2,18 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useAtomValue } from 'jotai';
+import { cartCountAtom } from '@/app/state/cartAtoms';
 import CartModal from '../cart/CartModal';
 
 export default function LayoutHeader() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [showAdminMenu, setShowAdminMenu] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const cartCount = useAtomValue(cartCountAtom);
 
   useEffect(() => {
-    if (localStorage.getItem('hasVisitedAdmin') === 'true') {
-      setShowAdminMenu(true);
-    }
+    setMounted(true);
   }, []);
 
   return (
@@ -30,12 +31,21 @@ export default function LayoutHeader() {
           Point dos amigos
         </h1>
         <div className="flex items-center gap-4">
-          <span
-            className="material-symbols-outlined text-[#3D0B37] hover:scale-105 transition-transform cursor-pointer"
+          <button
+            type="button"
+            className="relative"
             onClick={() => setIsCartOpen(true)}
+            aria-label="Abrir carrinho"
           >
-            shopping_bag
-          </span>
+            <span className="material-symbols-outlined text-[#3D0B37] hover:scale-105 transition-transform cursor-pointer">
+              shopping_bag
+            </span>
+            {mounted && cartCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-[#FFB800] text-[#271900] text-[10px] font-bold rounded-full min-w-5 h-5 px-1 flex items-center justify-center">
+                {cartCount}
+              </span>
+            )}
+          </button>
         </div>
       </nav>
 
@@ -92,18 +102,16 @@ export default function LayoutHeader() {
                 <span className="font-semibold text-lg">Montar Gelato</span>
               </Link>
 
-              {showAdminMenu && (
-                <div className="pt-4 mt-4 border-t border-outline-variant/20">
-                  <Link
-                    href="/admin"
-                    className="flex items-center gap-3 text-secondary hover:text-[#3D0B37] transition-colors p-2 rounded-lg hover:bg-surface-container-high"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    <span className="material-symbols-outlined">admin_panel_settings</span>
-                    <span className="font-semibold text-lg">Administração</span>
-                  </Link>
-                </div>
-              )}
+              <div className="pt-4 mt-4 border-t border-outline-variant/20">
+                <Link
+                  href="/admin"
+                  className="flex items-center gap-3 text-secondary hover:text-[#3D0B37] transition-colors p-2 rounded-lg hover:bg-surface-container-high"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <span className="material-symbols-outlined">admin_panel_settings</span>
+                  <span className="font-semibold text-lg">Administração</span>
+                </Link>
+              </div>
             </nav>
           </div>
         </div>

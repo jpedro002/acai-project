@@ -30,10 +30,24 @@ export default function AdminDashboard() {
       
       snapshot.forEach((doc) => {
         const data = doc.data();
+        const customerName = data.customer?.name || data.customerName || "Cliente não logado";
+        const itemsSummary = Array.isArray(data.items)
+          ? data.items
+              .map((item: { name?: string; size?: string }) => {
+                if (!item?.name) {
+                  return null;
+                }
+
+                return item.size ? `${item.name} (${item.size})` : item.name;
+              })
+              .filter(Boolean)
+              .join(", ")
+          : data.itemsSummary || "Produtos...";
+
         ordersData.push({
           id: doc.id,
-          customerName: data.customerName || "Cliente não logado",
-          itemsSummary: data.itemsSummary || "Produtos...",
+          customerName,
+          itemsSummary,
           status: data.status || "Recebido",
           total: data.total || 0,
         });

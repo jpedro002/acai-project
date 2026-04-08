@@ -1,32 +1,91 @@
 "use client";
 
 import { useState } from "react";
-import { 
-  signInWithEmailAndPassword, 
-  createUserWithEmailAndPassword, 
-  updatePassword 
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  updatePassword,
 } from "firebase/auth";
 import { auth } from "@/lib/firebase/client";
 
-// Essa senha secreta é usada para logar usuários que escolheram não ter senha
-const DEFAULT_PASS = "no-password-acai-123!";
-const getFakeEmail = (phone: string) => `${phone.replace(/\\D/g, "")}@acai.local`;
+type Step = "PHONE" | "ASK_PASSWORD" | "SET_PASSWORD" | "ENTER_PASSWORD";
+type AuthMode = "password" | "passwordless";
 
-export function PhoneLogin({ onLogin }: { onLogin?: () => void }) {
-  const [step, setStep] = useState<"PHONE" | "ASK_PASSWORD" | "SET_PASSWORD" | "ENTER_PASSWORD">("PHONE");
+export interface PhoneLoginResult {
+  phone: string;
+  authMode: AuthMode;
+}
+
+const DEFAULT_PASS = "no-password-acai-123!";
+const getFakeEmail = (phone: string) => `${phone}@acai.local`;
+const normalizePhone = (phone: string) => phone.replace(/\D/g, "");
+
+const getErrorMessage = (error: unknown, fallback: string) => {
+  if (error && typeof error === "object" && "message" in error) {
+    const message = (error as { message?: string }).message;
+    if (typeof message === "string" && message.length > 0) {
+      return message;
+    }
+  }
+
+  return fallback;
+};
+
+const getFirebaseErrorCode = (error: unknown) => {
+  if (error && typeof error === "object" && "code" in error) {
+    const code = (error as { code?: string }).code;
+    if (typeof code === "string") {
+      return code;
+    }
+  }
+
+  return "";
+};
+
+export function PhoneLogin({ onLogin }: { onLogin?: (result: PhoneLoginResult) => void }) {
+  const [step, setStep] = useState<Step>("PHONE");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const finalizeLogin = async (cleanPhone: string, authMode: AuthMode) => {
+    if (!auth || !auth.currentUser) {
+      throw new Error("Sessão de usuário não encontrada.");
+    }
+
+    const idToken = await auth.currentUser.getIdToken(true);
+
+    const response = await fetch("/api/auth/app/session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        idToken,
+        phone: cleanPhone,
+        authMode,
+      }),
+    });
+
+    if (!response.ok) {
+      const data = (await response.json()) as { error?: string };
+      throw new Error(data.error ?? "Não foi possível abrir sessão no app.");
+    }
+
+    if (onLogin) {
+      onLogin({ phone: cleanPhone, authMode });
+    }
+  };
+
   const handlePhoneSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const cleanPhone = phoneNumber.replace(/\\D/g, "");
+    const cleanPhone = normalizePhone(phoneNumber);
     
     if (cleanPhone.length < 10) {
       setError("Digite um número válido com DDD");
       return;
     }
+
+    setPhoneNumber(cleanPhone);
 
     setLoading(true);
     setError("");
@@ -36,35 +95,33 @@ export function PhoneLogin({ onLogin }: { onLogin?: () => void }) {
       if (!auth) throw new Error("Firebase não está configurado");
       
       try {
-        // Tenta logar usando a senha padrão (caso o usuário nunca tenha setado uma senha)
         await signInWithEmailAndPassword(auth, email, DEFAULT_PASS);
-        // Sucesso: usuário retornou e não tem senha personalizada!
-        if (onLogin) onLogin();
-      } catch (loginErr: any) {
-        if (loginErr.code === "auth/user-not-found" || loginErr.code === "auth/invalid-credential") {
+        await finalizeLogin(cleanPhone, "passwordless");
+      } catch (loginErr: unknown) {
+        const loginCode = getFirebaseErrorCode(loginErr);
+        if (
+          loginCode === "auth/user-not-found" ||
+          loginCode === "auth/invalid-credential" ||
+          loginCode === "auth/wrong-password"
+        ) {
           try {
-            // Se falhou por não existir, vamos criar com a senha padrão!
             await createUserWithEmailAndPassword(auth, email, DEFAULT_PASS);
-            // Sucesso: usuário novo criado
             setStep("ASK_PASSWORD");
-          } catch (createErr: any) {
-            if (createErr.code === "auth/email-already-in-use") {
-              // Significa que a conta existe e o signInWithEmailAndPassword retornou invalid-credential, então ele tem senha própria
+          } catch (createErr: unknown) {
+            const createCode = getFirebaseErrorCode(createErr);
+            if (createCode === "auth/email-already-in-use") {
               setStep("ENTER_PASSWORD");
             } else {
               throw createErr;
             }
           }
-        } else if (loginErr.code === "auth/wrong-password") {
-          // Significa que o usuário tem uma senha personalizada
-          setStep("ENTER_PASSWORD");
         } else {
           throw loginErr;
         }
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      setError(err.message || "Erro de autenticação");
+      setError(getErrorMessage(err, "Erro de autenticação"));
     } finally {
       setLoading(false);
     }
@@ -77,13 +134,11 @@ export function PhoneLogin({ onLogin }: { onLogin?: () => void }) {
     try {
       if (!auth || !auth.currentUser) throw new Error("Usuário não logado");
       if (password.length < 6) throw new Error("A senha deve ter pelo menos 6 caracteres");
-      
-      // Atualiza a senha padrão 'no-password-acai-123!' para a senha que o cliente digitou
+
       await updatePassword(auth.currentUser, password);
-      // E segue pro login final
-      if (onLogin) onLogin();
-    } catch (err: any) {
-      setError(err.message || "Erro ao definir senha");
+      await finalizeLogin(normalizePhone(phoneNumber), "password");
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, "Erro ao definir senha"));
     } finally {
       setLoading(false);
     }
@@ -95,18 +150,28 @@ export function PhoneLogin({ onLogin }: { onLogin?: () => void }) {
     setError("");
     try {
       if (!auth) throw new Error("Firebase não está configurado");
-      const email = getFakeEmail(phoneNumber);
+      const cleanPhone = normalizePhone(phoneNumber);
+      const email = getFakeEmail(cleanPhone);
       await signInWithEmailAndPassword(auth, email, password);
-      if (onLogin) onLogin();
-    } catch (err: any) {
-      setError("Senha incorreta");
+      await finalizeLogin(cleanPhone, "password");
+    } catch (err: unknown) {
+      console.error(err);
+      setError("Senha incorreta ou conta inválida.");
     } finally {
       setLoading(false);
     }
   };
 
-  const skipPassword = () => {
-    if (onLogin) onLogin();
+  const skipPassword = async () => {
+    try {
+      setLoading(true);
+      setError("");
+      await finalizeLogin(normalizePhone(phoneNumber), "passwordless");
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, "Erro ao concluir login sem senha"));
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (step === "PHONE") {
@@ -152,17 +217,21 @@ export function PhoneLogin({ onLogin }: { onLogin?: () => void }) {
         <div className="flex flex-col gap-3">
           <button
              onClick={() => setStep("SET_PASSWORD")}
+             disabled={loading}
              className="bg-black text-white p-3 rounded-xl hover:bg-gray-800 font-bold transition-colors"
           >
             Sim, criar uma senha
           </button>
           <button
             onClick={skipPassword}
-            className="bg-gray-100 text-gray-800 p-3 rounded-xl hover:bg-gray-200 font-bold transition-colors"
+            disabled={loading}
+            className="bg-gray-100 text-gray-800 p-3 rounded-xl hover:bg-gray-200 font-bold transition-colors disabled:bg-gray-200"
           >
-             Pular (continuar sem senha)
+             {loading ? "Entrando..." : "Pular (continuar sem senha)"}
           </button>
         </div>
+
+        {error && <p className="text-red-500 text-sm">{error}</p>}
       </div>
     );
   }

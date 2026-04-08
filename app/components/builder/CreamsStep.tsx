@@ -1,18 +1,19 @@
 "use client";
 
 import { useCatalog } from "@/app/hooks/useCatalog";
+import builderData from "@/app/data/builder-data.json";
 import Image from "next/image";
 
 interface CreamsStepProps {
     selectedCreams: string[];
     setSelectedCreams: (creams: string[]) => void;
+    maxCreams: number;
     onNext: () => void;
     onBack: () => void;
 }
 
-export default function CreamsStep({ selectedCreams, setSelectedCreams, onNext, onBack }: CreamsStepProps) {
-    const maxCreams = 3;
-    const { items: creams, loading } = useCatalog("cream");
+export default function CreamsStep({ selectedCreams, setSelectedCreams, maxCreams, onNext, onBack }: CreamsStepProps) {
+    const { items: creams } = useCatalog("cream", builderData.builder.creams);
 
     const toggleCream = (creamId: string) => {
         if (selectedCreams.includes(creamId)) {

@@ -1,6 +1,7 @@
 "use client";
 
-import React from "react";
+import builderData from "@/app/data/builder-data.json";
+import { useConfigDoc } from "@/app/hooks/useConfigDoc";
 
 interface GelatoBaseStepProps {
     selectedSize: string;
@@ -13,60 +14,8 @@ export default function GelatoBaseStep({
     setSelectedSize,
     onNext
 }: GelatoBaseStepProps) {
-    const options = [
-        {
-            value: "P",
-            title: "Gelato P",
-            price: "R$ 10,00",
-            description: (
-                <>
-                    2 Sabores<br />
-                    1 Cobertura<br />
-                    1 Fruta<br />
-                    2 Mix
-                </>
-            )
-        },
-        {
-            value: "M",
-            title: "Gelato M",
-            price: "R$ 15,00",
-            description: (
-                <>
-                    3 Sabores<br />
-                    2 Coberturas<br />
-                    2 Frutas<br />
-                    3 Mix
-                </>
-            )
-        },
-        {
-            value: "G",
-            title: "Gelato G",
-            price: "R$ 20,00",
-            description: (
-                <>
-                    4 Sabores<br />
-                    3 Coberturas<br />
-                    3 Frutas<br />
-                    4 Mix
-                </>
-            )
-        },
-        {
-            value: "GG",
-            title: "Gelato GG",
-            price: "R$ 25,00",
-            description: (
-                <>
-                    5 Sabores<br />
-                    4 Coberturas<br />
-                    4 Frutas<br />
-                    5 Mix
-                </>
-            )
-        }
-    ];
+    const { data: gelatoConfig } = useConfigDoc("gelatoBuilder", builderData.gelatoBuilder);
+    const options = gelatoConfig.sizes;
 
     return (
         <div className="relative z-10 flex flex-col h-full min-h-screen w-full max-w-md mx-auto bg-surface pb-24">
@@ -84,8 +33,8 @@ export default function GelatoBaseStep({
                     <label
                         key={option.value}
                         className={`relative flex flex-col gap-4 rounded-xl bg-surface-container-lowest p-6 ambient-shadow cursor-pointer transition-transform hover:scale-[1.02] ${selectedSize === option.value
-                                ? "border-2 border-inverse-primary"
-                                : "ghost-border hover:border-outline-variant/40"
+                            ? "border-2 border-inverse-primary"
+                            : "ghost-border hover:border-outline-variant/40"
                             }`}
                         onClick={() => setSelectedSize(option.value)}
                     >
@@ -102,7 +51,9 @@ export default function GelatoBaseStep({
                             <span className="text-tertiary-container font-headline font-bold text-lg">{option.price}</span>
                         </div>
                         <p className="text-on-surface-variant text-sm font-body leading-relaxed mt-4">
-                            {option.description}
+                            {option.descriptionLines.map((line: string) => (
+                                <span key={line} className="block">{line}</span>
+                            ))}
                         </p>
                         {selectedSize === option.value && (
                             <div className="absolute top-4 right-4 text-inverse-primary">

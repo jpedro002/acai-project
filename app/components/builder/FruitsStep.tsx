@@ -1,18 +1,19 @@
 "use client";
 
 import { useCatalog } from "@/app/hooks/useCatalog";
+import builderData from "@/app/data/builder-data.json";
 import Image from "next/image";
 
 interface FruitsStepProps {
     selectedFruits: string[];
     setSelectedFruits: (fruits: string[]) => void;
+    maxFruits: number;
     onNext: () => void;
     onBack: () => void;
 }
 
-export default function FruitsStep({ selectedFruits, setSelectedFruits, onNext, onBack }: FruitsStepProps) {
-    const maxFruits = 3;
-    const { items: fruits, loading } = useCatalog("fruit");
+export default function FruitsStep({ selectedFruits, setSelectedFruits, maxFruits, onNext, onBack }: FruitsStepProps) {
+    const { items: fruits } = useCatalog("fruit", builderData.builder.fruits);
 
     const toggleFruit = (fruitId: string) => {
         if (selectedFruits.includes(fruitId)) {

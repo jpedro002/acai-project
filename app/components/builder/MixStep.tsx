@@ -1,17 +1,18 @@
 "use client";
 
 import { useCatalog } from "@/app/hooks/useCatalog";
+import builderData from "@/app/data/builder-data.json";
 
 interface MixStepProps {
     selectedMix: string[];
     setSelectedMix: (mix: string[]) => void;
+    maxMix: number;
     onNext: () => void;
     onBack: () => void;
 }
 
-export default function MixStep({ selectedMix, setSelectedMix, onNext, onBack }: MixStepProps) {
-    const maxMix = 2;
-    const { items: mixItems, loading } = useCatalog("mix");
+export default function MixStep({ selectedMix, setSelectedMix, maxMix, onNext, onBack }: MixStepProps) {
+    const { items: mixItems } = useCatalog("mix", builderData.builder.mix);
 
     const toggleMix = (mixId: string) => {
         if (selectedMix.includes(mixId)) {

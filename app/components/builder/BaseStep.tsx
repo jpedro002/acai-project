@@ -1,6 +1,8 @@
 "use client";
 
 import { useCatalog } from "@/app/hooks/useCatalog";
+import { useConfigDoc } from "@/app/hooks/useConfigDoc";
+import builderData from "@/app/data/builder-data.json";
 import Image from "next/image";
 import BaseCard from "./BaseCard";
 
@@ -13,14 +15,11 @@ interface BaseStepProps {
 }
 
 export default function BaseStep({ selectedBase, setSelectedBase, selectedSize, setSelectedSize, onNext }: BaseStepProps) {
-    const { items: bases, loading } = useCatalog("base");
-
-    const sizes = [
-        { id: "300", label: "300ml" },
-        { id: "500", label: "500ml" },
-        { id: "700", label: "700ml" },
-        { id: "1000", label: "1 litro" }
-    ];
+    const { items: bases } = useCatalog("base", builderData.builder.bases);
+    const { data: builderConfig } = useConfigDoc("builder", {
+        sizes: builderData.builder.sizes,
+    });
+    const sizes = builderConfig.sizes;
 
     const formatPrice = (price: number) => {
         return price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
