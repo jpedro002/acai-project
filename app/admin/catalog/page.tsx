@@ -127,13 +127,13 @@ export default function CatalogPage() {
         const { name, value } = e.target;
         setCurrentItem((prev) => ({ ...prev, [name]: value ? Number(value) : undefined }));
     };
-    
+
     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!e.target.files || e.target.files.length === 0) return;
         const file = e.target.files[0];
-        
+
         setUploadingImage(true);
-        
+
         try {
             // 1. Obter a URL pré-assinada do backend
             const res = await fetch('/api/upload', {
@@ -141,21 +141,21 @@ export default function CatalogPage() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ filename: file.name, contentType: file.type })
             });
-            
+
             const data = await res.json();
             if (!res.ok) throw new Error(data.error || "Falha ao gerar URL de upload");
-            
+
             const { presignedUrl, publicUrl } = data;
-            
+
             // 2. Fazer o upload para o R2 (Cloudflare) via PUT
             const uploadRes = await fetch(presignedUrl, {
                 method: 'PUT',
                 body: file,
                 headers: { 'Content-Type': file.type }
             });
-            
+
             if (!uploadRes.ok) throw new Error("Falha ao subir o arquivo para o Cloudflare");
-            
+
             // 3. Sucesso!
             setCurrentItem((prev) => ({ ...prev, imageUrl: publicUrl }));
             toast.success("Imagem enviada com sucesso!");
@@ -173,15 +173,15 @@ export default function CatalogPage() {
         setIsSaving(true);
         try {
             if (!db) throw new Error("DB not init");
-            
+
             const { docId, ...dataToSave } = currentItem;
-            
+
             // Auto generate ID if not exists
             if (!dataToSave.id) {
                 const sourceName = dataToSave.title || dataToSave.label;
                 dataToSave.id = sourceName ? slugify(sourceName) : Math.random().toString(36).substring(7);
             }
-            
+
             if (!dataToSave.type) {
                 toast.error("Tipo é obrigatório.");
                 setIsSaving(false);
@@ -195,7 +195,7 @@ export default function CatalogPage() {
             const cleanData = Object.fromEntries(Object.entries(dataToSave).filter(([_, v]) => v !== undefined));
 
             await setDoc(docRef, cleanData);
-            
+
             // If the category (type) or id changed, we should delete the old document
             if (docId && docId !== targetDocId) {
                 await deleteDoc(doc(db, 'catalog', docId));
@@ -214,7 +214,7 @@ export default function CatalogPage() {
 
     const handleDelete = async () => {
         if (!itemToDelete) return;
-        
+
         try {
             if (!db) return;
             await deleteDoc(doc(db, 'catalog', itemToDelete));
@@ -398,7 +398,7 @@ export default function CatalogPage() {
                                         placeholder="Ex: CLÁSSICO, NOVO"
                                     />
                                 </div>
-                                
+
                                 {currentItem.type === 'base' || currentItem.type === 'gelato-base' ? (
                                     <div className="col-span-1 md:col-span-2 bg-surface-container-high p-4 rounded-lg space-y-3 border border-outline-variant">
                                         <label className="text-sm font-bold text-on-surface-variant block">Tabela de Preços por Tamanho</label>
@@ -407,18 +407,18 @@ export default function CatalogPage() {
                                                 <span className="text-xs text-on-surface-variant col-span-2">Nenhum tamanho cadastrado no sistema. Crie um tamanho primeiro.</span>
                                             ) : (
                                                 sizesFromCatalog.map(size => (
-                                                <div key={size.id} className="space-y-1">
-                                                    <label className="text-xs font-bold text-on-surface-variant">{size.label || size.id} (R$)</label>
-                                                    <input
-                                                        type="number"
-                                                        step="0.01"
-                                                        value={currentItem.prices?.[size.id] ?? ''}
-                                                        onChange={(e) => handlePriceChange(size.id, e.target.value)}
-                                                        className="w-full bg-surface-container p-2 rounded-lg border border-outline focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
-                                                        placeholder="Ex: 15.90"
-                                                    />
-                                                </div>
-                                            )))}
+                                                    <div key={size.id} className="space-y-1">
+                                                        <label className="text-xs font-bold text-on-surface-variant">{size.label || size.id} (R$)</label>
+                                                        <input
+                                                            type="number"
+                                                            step="0.01"
+                                                            value={currentItem.prices?.[size.id] ?? ''}
+                                                            onChange={(e) => handlePriceChange(size.id, e.target.value)}
+                                                            className="w-full bg-surface-container p-2 rounded-lg border border-outline focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
+                                                            placeholder="Ex: 15.90"
+                                                        />
+                                                    </div>
+                                                )))}
                                         </div>
                                     </div>
                                 ) : null}
@@ -451,10 +451,10 @@ export default function CatalogPage() {
                                 <div className="col-span-1 md:col-span-2 space-y-2 border p-4 rounded-lg bg-surface-container-low border-outline-variant">
                                     <label className="text-sm font-bold text-on-surface-variant block">Upload de Imagem</label>
                                     <div className="flex gap-4 items-center">
-                                       {currentItem.imageUrl && (
-                                           <img src={currentItem.imageUrl} alt="preview" className="w-16 h-16 rounded object-cover border" />
-                                       )}
-                                       <div className="flex-1">
+                                        {currentItem.imageUrl && (
+                                            <img src={currentItem.imageUrl} alt="preview" className="w-16 h-16 rounded object-cover border" />
+                                        )}
+                                        <div className="flex-1">
                                             <input
                                                 type="file"
                                                 accept="image/*"
@@ -472,7 +472,7 @@ export default function CatalogPage() {
                                                     placeholder="Url da imagem (auto ao upar)"
                                                 />
                                             </div>
-                                       </div>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -520,7 +520,7 @@ export default function CatalogPage() {
                     </div>
                 </div>
             )}
-            
+
             <AlertDialog open={!!itemToDelete} onOpenChange={(isOpen) => !isOpen && setItemToDelete(null)}>
                 <AlertDialogContent className="bg-surface text-on-surface border-outline">
                     <AlertDialogHeader>
