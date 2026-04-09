@@ -23,25 +23,29 @@ export default function AdminDashboard() {
     }
 
     const q = query(collection(db, "orders"), orderBy("createdAt", "desc"));
-    
+
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const ordersData: Order[] = [];
       let revenue = 0;
-      
+
+      console.log("Total de pedidos no snapshot:", snapshot.size);
+
       snapshot.forEach((doc) => {
         const data = doc.data();
+        console.log(`Documento ID [${doc.id}] dados:`, JSON.stringify(data, null, 2));
+        
         const customerName = data.customer?.name || data.customerName || "Cliente não logado";
         const itemsSummary = Array.isArray(data.items)
           ? data.items
-              .map((item: { name?: string; size?: string }) => {
-                if (!item?.name) {
-                  return null;
-                }
+            .map((item: { name?: string; size?: string }) => {
+              if (!item?.name) {
+                return null;
+              }
 
-                return item.size ? `${item.name} (${item.size})` : item.name;
-              })
-              .filter(Boolean)
-              .join(", ")
+              return item.size ? `${item.name} (${item.size})` : item.name;
+            })
+            .filter(Boolean)
+            .join(", ")
           : data.itemsSummary || "Produtos...";
 
         ordersData.push({
@@ -53,7 +57,7 @@ export default function AdminDashboard() {
         });
         revenue += data.total || 0;
       });
-      
+
       setOrders(ordersData);
       setStats({
         totalOrders: ordersData.length,
@@ -63,6 +67,7 @@ export default function AdminDashboard() {
 
     return () => unsubscribe();
   }, []);
+
 
   const formatPrice = (price: number) => {
     return price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -74,7 +79,7 @@ export default function AdminDashboard() {
         <h1 className="text-3xl font-black font-headline text-on-surface">Visão Geral</h1>
         <p className="text-on-surface-variant mt-2">Acompanhe as vendas de Açaí e Gelato hoje em tempo real.</p>
       </header>
-      
+
       <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-surface p-6 rounded-2xl shadow-sm border border-outline-variant/30 flex flex-col gap-2">
           <span className="text-on-surface-variant font-bold uppercase text-xs tracking-wider">Pedidos Hoje</span>

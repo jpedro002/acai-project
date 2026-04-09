@@ -51,8 +51,14 @@ export default async function AdminLayout({
           <h2 className="text-xl font-bold font-headline text-primary">Point dos amigos Admin</h2>
         </div>
         <nav className="flex-1 px-4 flex flex-col gap-2">
-          <Link href="/admin" className="p-3 bg-primary-container text-on-primary-container rounded-lg font-bold">
+          <Link href="/admin" className="p-3 hover:bg-surface-variant text-on-surface rounded-lg transition-colors">
             Dashboard
+          </Link>
+          <Link href="/admin/users" className="p-3 hover:bg-surface-variant text-on-surface rounded-lg transition-colors">
+            Usuários
+          </Link>
+          <Link href="/admin/admins" className="p-3 hover:bg-surface-variant text-on-surface rounded-lg transition-colors">
+            Administradores
           </Link>
           <button type="button" className="p-3 text-left hover:bg-surface-variant rounded-lg transition-colors" disabled>
             Pedidos
