@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import builderData from "@/app/data/builder-data.json";
 import { useConfigDoc } from "@/app/hooks/useConfigDoc";
 import { addCartItemAtom } from "@/app/state/cartAtoms";
@@ -18,6 +18,11 @@ export default function GelatoBuilderPage() {
     const router = useRouter();
     const addCartItem = useSetAtom(addCartItemAtom);
     const [step, setStep] = useState(1);
+
+    // Scroll para topo quando mudar de step
+    useEffect(() => {
+        window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+    }, [step]);
 
     // Base Step State
     const [selectedSize, setSelectedSize] = useState<string>("P");

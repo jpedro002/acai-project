@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation';
 import { adminAuth, adminDb } from '@/lib/firebase/admin';
 import { ADMIN_SESSION_COOKIE_NAME } from '@/lib/auth/session';
 import AdminLogoutButton from './components/AdminLogoutButton';
+import { Toaster } from "@/components/ui/sonner";
 
 const getAllowedAdminEmails = () => {
   const rawValue = process.env.ADMIN_ALLOWED_EMAILS ?? 'admin@acai.com';
@@ -63,9 +64,9 @@ export default async function AdminLayout({
           <button type="button" className="p-3 text-left hover:bg-surface-variant rounded-lg transition-colors" disabled>
             Pedidos
           </button>
-          <button type="button" className="p-3 text-left hover:bg-surface-variant rounded-lg transition-colors" disabled>
+          <Link href="/admin/catalog" className="p-3 hover:bg-surface-variant text-on-surface rounded-lg transition-colors">
             Produtos
-          </button>
+          </Link>
         </nav>
         <div className="p-4 border-t border-outline-variant">
           <AdminLogoutButton />
@@ -76,6 +77,7 @@ export default async function AdminLayout({
       <main className="flex-1 p-8 overflow-auto">
         {children}
       </main>
+      <Toaster position="top-right" />
     </div>
   );
 }

@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import JotaiProvider from "./providers/JotaiProvider";
+import ScrollToTop from "./components/ScrollToTop";
 import "./globals.css";
 import { Inter } from "next/font/google";
 import { cn } from "@/lib/utils";
 
-const inter = Inter({subsets:['latin'],variable:'--font-sans'});
+const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 
 export const metadata: Metadata = {
   title: "Point dos amigos",
@@ -24,6 +25,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen flex flex-col font-body bg-background text-on-background">
         <JotaiProvider>
+          <ScrollToTop />
           {children}
         </JotaiProvider>
       </body>

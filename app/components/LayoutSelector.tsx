@@ -20,5 +20,5 @@ export default function LayoutSelector({ layout = 'v1' }: LayoutSelectorProps) {
     }
   };
 
-  return <Suspense fallback={<div>Carregando...</div>}>{renderLayout()}</Suspense>;
+  return renderLayout()
 }

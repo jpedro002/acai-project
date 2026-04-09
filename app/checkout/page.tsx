@@ -31,6 +31,15 @@ const formatBRL = (value: number) => {
   });
 };
 
+const formatPhone = (value: string) => {
+  const v = value.replace(/\D/g, "");
+  if (!v) return "";
+  if (v.length <= 2) return `(${v}`;
+  if (v.length <= 6) return `(${v.slice(0, 2)}) ${v.slice(2)}`;
+  if (v.length <= 10) return `(${v.slice(0, 2)}) ${v.slice(2, 6)}-${v.slice(6)}`;
+  return `(${v.slice(0, 2)}) ${v.slice(2, 7)}-${v.slice(7, 11)}`;
+};
+
 export default function CheckoutPage() {
   const router = useRouter();
   const cartItems = useAtomValue(cartItemsAtom);
@@ -56,6 +65,10 @@ export default function CheckoutPage() {
 
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setAuthUser(user);
+      if (user?.email?.includes('@acai.local')) {
+        const extractedPhone = user.email.split('@')[0];
+        setPhone(formatPhone(extractedPhone));
+      }
       setIsCheckingAuth(false);
     });
 
@@ -99,7 +112,7 @@ export default function CheckoutPage() {
           uid: authUser.uid,
           email: authUser.email,
           name: customerName.trim(),
-          phone: phone.trim(),
+          phone: phone.replace(/\D/g, ""),
         },
         deliveryAddress: {
           street: street.trim(),
@@ -125,7 +138,7 @@ export default function CheckoutPage() {
   };
 
   const handlePhoneLogin = ({ phone: loggedPhone }: PhoneLoginResult) => {
-    setPhone((prev) => prev || loggedPhone);
+    setPhone((prev) => prev || formatPhone(loggedPhone));
   };
 
   const handleAppLogout = async () => {
@@ -194,23 +207,27 @@ export default function CheckoutPage() {
             <div className="space-y-2">
               <label className="text-sm font-semibold text-on-surface-variant ml-1">Como te chamam?</label>
               <input
-                className="w-full bg-surface-container-high border-none rounded-xl px-4 py-4 focus:ring-2 focus:ring-inverse-primary transition-all placeholder:text-on-surface-variant/50"
+                className="w-full bg-surface-container-high border-none rounded-xl px-4 py-4 focus:ring-2 focus:ring-inverse-primary transition-all placeholder:text-on-surface-variant/50 outline-none text-on-surface"
                 placeholder="Nome Completo"
                 type="text"
                 value={customerName}
                 onChange={(event) => setCustomerName(event.target.value)}
               />
             </div>
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-on-surface-variant ml-1">Telefone para contato</label>
-              <input
-                className="w-full bg-surface-container-high border-none rounded-xl px-4 py-4 focus:ring-2 focus:ring-inverse-primary transition-all placeholder:text-on-surface-variant/50"
-                placeholder="(11) 99999-9999"
-                type="tel"
-                value={phone}
-                onChange={(event) => setPhone(event.target.value)}
-              />
-            </div>
+            {authUser && phone && (
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-on-surface-variant ml-1">Telefone para contato</label>
+                <div className="relative">
+                  <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-inverse-primary">phone</span>
+                  <input
+                    className="w-full bg-surface-container-high/50 border-none rounded-xl pl-12 pr-4 py-4 text-on-surface-variant cursor-not-allowed outline-none"
+                    type="tel"
+                    value={phone}
+                    disabled
+                  />
+                </div>
+              </div>
+            )}
           </div>
         </section>
 

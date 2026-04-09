@@ -20,6 +20,15 @@ const DEFAULT_PASS = "no-password-acai-123!";
 const getFakeEmail = (phone: string) => `${phone}@acai.local`;
 const normalizePhone = (phone: string) => phone.replace(/\D/g, "");
 
+const formatPhone = (value: string) => {
+  const v = value.replace(/\D/g, "");
+  if (!v) return "";
+  if (v.length <= 2) return `(${v}`;
+  if (v.length <= 6) return `(${v.slice(0, 2)}) ${v.slice(2)}`;
+  if (v.length <= 10) return `(${v.slice(0, 2)}) ${v.slice(2, 6)}-${v.slice(6)}`;
+  return `(${v.slice(0, 2)}) ${v.slice(2, 7)}-${v.slice(7, 11)}`;
+};
+
 const getErrorMessage = (error: unknown, fallback: string) => {
   if (error && typeof error === "object" && "message" in error) {
     const message = (error as { message?: string }).message;
@@ -79,13 +88,13 @@ export function PhoneLogin({ onLogin }: { onLogin?: (result: PhoneLoginResult) =
   const handlePhoneSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const cleanPhone = normalizePhone(phoneNumber);
-    
+
     if (cleanPhone.length < 10) {
       setError("Digite um número válido com DDD");
       return;
     }
 
-    setPhoneNumber(cleanPhone);
+    setPhoneNumber(formatPhone(cleanPhone));
 
     setLoading(true);
     setError("");
@@ -93,7 +102,7 @@ export function PhoneLogin({ onLogin }: { onLogin?: (result: PhoneLoginResult) =
 
     try {
       if (!auth) throw new Error("Firebase não está configurado");
-      
+
       try {
         await signInWithEmailAndPassword(auth, email, DEFAULT_PASS);
         await finalizeLogin(cleanPhone, "passwordless");
@@ -176,79 +185,79 @@ export function PhoneLogin({ onLogin }: { onLogin?: (result: PhoneLoginResult) =
 
   if (step === "PHONE") {
     return (
-      <div className="flex flex-col gap-4 w-full max-w-sm mx-auto p-6 border border-gray-200 rounded-2xl shadow-sm bg-white">
-        <h2 className="text-xl font-bold">Acessar ou Criar Conta</h2>
+      <div className="flex flex-col gap-4 w-full p-6 border border-outline-variant/20 rounded-3xl shadow-sm bg-surface">
         <form onSubmit={handlePhoneSubmit} className="flex flex-col gap-4">
-          <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium text-gray-700">Telefone (com DDD)</label>
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-semibold text-on-surface-variant ml-1">Telefone para contato e login (com DDD)</label>
             <input
               type="tel"
               value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
-              placeholder="11999999999"
-              className="border border-gray-300 p-3 rounded-xl outline-none focus:ring-2 focus:ring-black"
+              onChange={(e) => setPhoneNumber(formatPhone(e.target.value))}
+              placeholder="(11) 99999-9999"
+              className="w-full bg-surface-container-high border-none rounded-xl px-4 py-4 focus:ring-2 focus:ring-inverse-primary transition-all placeholder:text-on-surface-variant/50 outline-none text-on-surface"
               required
               disabled={loading}
               autoFocus
+              maxLength={15}
             />
           </div>
           <button
             type="submit"
             disabled={loading}
-            className="bg-black text-white p-3 rounded-xl hover:bg-gray-800 disabled:bg-gray-400 font-bold transition-colors"
+            className="bg-inverse-primary text-on-primary-fixed py-4 rounded-xl font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90"
           >
             {loading ? "Verificando..." : "Continuar"}
           </button>
         </form>
-        {error && <p className="text-red-500 text-sm">{error}</p>}
+        {error && <p className="text-error font-bold text-sm">{error}</p>}
       </div>
     );
   }
 
   if (step === "ASK_PASSWORD") {
     return (
-      <div className="flex flex-col gap-4 w-full max-w-sm mx-auto p-6 border border-gray-200 rounded-2xl shadow-sm bg-white">
-        <h2 className="text-xl font-bold">Quase lá! 🎉</h2>
-        <p className="text-sm text-gray-600 mb-2">
-          Deseja cadastrar uma senha para aumentar a segurança da sua conta? 
+      <div className="flex flex-col gap-4 w-full p-6 border border-outline-variant/20 rounded-3xl shadow-sm bg-surface">
+        <h2 className="text-xl font-bold font-headline">Quase lá! 🎉</h2>
+        <p className="text-sm text-on-surface-variant mb-2">
+          Deseja cadastrar uma senha para aumentar a segurança da sua conta?
           Se pular essa etapa, você só precisará informar seu número na próxima vez!
         </p>
-        
+
         <div className="flex flex-col gap-3">
           <button
-             onClick={() => setStep("SET_PASSWORD")}
-             disabled={loading}
-             className="bg-black text-white p-3 rounded-xl hover:bg-gray-800 font-bold transition-colors"
+            onClick={() => setStep("SET_PASSWORD")}
+            disabled={loading}
+            className="bg-inverse-primary text-on-primary-fixed p-4 rounded-xl font-bold transition-colors hover:opacity-90"
           >
             Sim, criar uma senha
           </button>
           <button
             onClick={skipPassword}
             disabled={loading}
-            className="bg-gray-100 text-gray-800 p-3 rounded-xl hover:bg-gray-200 font-bold transition-colors disabled:bg-gray-200"
+            className="bg-surface-container-high text-on-surface p-4 rounded-xl font-bold transition-colors hover:bg-surface-variant disabled:opacity-50"
           >
-             {loading ? "Entrando..." : "Pular (continuar sem senha)"}
+            {loading ? "Entrando..." : "Pular (continuar sem senha)"}
           </button>
         </div>
 
-        {error && <p className="text-red-500 text-sm">{error}</p>}
+        {error && <p className="text-error font-bold text-sm">{error}</p>}
       </div>
     );
   }
 
   if (step === "SET_PASSWORD") {
     return (
-      <div className="flex flex-col gap-4 w-full max-w-sm mx-auto p-6 border border-gray-200 rounded-2xl shadow-sm bg-white">
-        <h2 className="text-xl font-bold">Criar Senha</h2>
+      <div className="flex flex-col gap-4 w-full p-6 border border-outline-variant/20 rounded-3xl shadow-sm bg-surface">
+        <h2 className="text-xl font-bold font-headline">Criar Senha</h2>
         <form onSubmit={handleSetPassword} className="flex flex-col gap-4">
-          <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium text-gray-700">Digite uma senha forte</label>
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-semibold text-on-surface-variant ml-1">Digite uma senha forte</label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Mínimo 6 caracteres"
-              className="border border-gray-300 p-3 rounded-xl outline-none focus:ring-2 focus:ring-black"
+              className="w-full bg-surface-container-high border-none rounded-xl px-4 py-4 focus:ring-2 focus:ring-inverse-primary transition-all placeholder:text-on-surface-variant/50 outline-none text-on-surface"
               required
               disabled={loading}
               minLength={6}
@@ -258,30 +267,30 @@ export function PhoneLogin({ onLogin }: { onLogin?: (result: PhoneLoginResult) =
           <button
             type="submit"
             disabled={loading}
-            className="bg-black text-white p-3 rounded-xl hover:bg-gray-800 disabled:bg-gray-400 font-bold transition-colors"
+            className="bg-inverse-primary text-on-primary-fixed py-4 rounded-xl font-bold transition-colors disabled:opacity-50 hover:opacity-90"
           >
             {loading ? "Salvando..." : "Salvar Senha e Entrar"}
           </button>
         </form>
-        {error && <p className="text-red-500 text-sm">{error}</p>}
+        {error && <p className="text-error font-bold text-sm">{error}</p>}
       </div>
     );
   }
 
   if (step === "ENTER_PASSWORD") {
     return (
-      <div className="flex flex-col gap-4 w-full max-w-sm mx-auto p-6 border border-gray-200 rounded-2xl shadow-sm bg-white">
-        <h2 className="text-xl font-bold">Bem vindo de volta! 👋</h2>
-        <p className="text-sm text-gray-600 mb-2">Para proteger sua conta, digite sua senha cadastrada.</p>
+      <div className="flex flex-col gap-4 w-full p-6 border border-outline-variant/20 rounded-3xl shadow-sm bg-surface">
+        <h2 className="text-xl font-bold font-headline">Bem vindo de volta! 👋</h2>
+        <p className="text-sm text-on-surface-variant mb-2">Para proteger sua conta, digite sua senha cadastrada.</p>
         <form onSubmit={handleLoginWithPassword} className="flex flex-col gap-4">
-          <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium text-gray-700">Sua senha secreta</label>
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-semibold text-on-surface-variant ml-1">Sua senha secreta</label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
-              className="border border-gray-300 p-3 rounded-xl outline-none focus:ring-2 focus:ring-black"
+              className="w-full bg-surface-container-high border-none rounded-xl px-4 py-4 focus:ring-2 focus:ring-inverse-primary transition-all placeholder:text-on-surface-variant/50 outline-none text-on-surface"
               required
               disabled={loading}
               autoFocus
@@ -290,15 +299,15 @@ export function PhoneLogin({ onLogin }: { onLogin?: (result: PhoneLoginResult) =
           <button
             type="submit"
             disabled={loading}
-            className="bg-black text-white p-3 rounded-xl hover:bg-gray-800 disabled:bg-gray-400 font-bold transition-colors"
+            className="bg-inverse-primary text-on-primary-fixed py-4 rounded-xl font-bold transition-colors disabled:opacity-50 hover:opacity-90"
           >
             {loading ? "Acessando..." : "Entrar"}
           </button>
           <button
             type="button"
             onClick={() => {
-               setStep("PHONE");
-               setPassword("");
+              setStep("PHONE");
+              setPassword("");
             }}
             className="text-sm text-center text-gray-500 mt-2 hover:underline"
           >

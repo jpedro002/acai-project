@@ -1,6 +1,7 @@
 import { initializeApp, getApps, getApp, FirebaseApp } from "firebase/app";
 import { getAuth, Auth } from "firebase/auth";
 import { getFirestore, Firestore } from "firebase/firestore";
+import { getStorage, FirebaseStorage } from "firebase/storage";
 import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "firebase/app-check";
 
 const firebaseConfig = {
@@ -19,6 +20,7 @@ const app: FirebaseApp | null = process.env.NEXT_PUBLIC_FIREBASE_API_KEY
 
 const auth: Auth | null = app ? getAuth(app) : null;
 const db: Firestore | null = app ? getFirestore(app) : null;
+const storage: FirebaseStorage | null = app ? getStorage(app) : null;
 
 // Initialize App Check (client-side only)
 if (app && typeof window !== "undefined" && process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY) {
@@ -28,4 +30,4 @@ if (app && typeof window !== "undefined" && process.env.NEXT_PUBLIC_RECAPTCHA_SI
   });
 }
 
-export { app, auth, db };
+export { app, auth, db, storage };
