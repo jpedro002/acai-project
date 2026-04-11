@@ -1,8 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import { useCatalog } from "@/app/hooks/useCatalog";
 import builderData from "@/app/data/builder-data.json";
 import Image from "next/image";
+import LimitReachedBanner from "./LimitReachedBanner";
 
 interface ToppingsStepProps {
     selectedToppings: string[];
@@ -14,6 +16,9 @@ interface ToppingsStepProps {
 
 export default function ToppingsStep({ selectedToppings, setSelectedToppings, maxToppings, onNext, onBack }: ToppingsStepProps) {
     const { items: toppings } = useCatalog("topping", builderData.builder.toppings);
+    const [shakeId, setShakeId] = useState<string | null>(null);
+
+    const isAtLimit = selectedToppings.length >= maxToppings;
 
     const toggleTopping = (toppingId: string) => {
         if (selectedToppings.includes(toppingId)) {
@@ -26,28 +31,50 @@ export default function ToppingsStep({ selectedToppings, setSelectedToppings, ma
         }
     };
 
+    const handleCardClick = (toppingId: string) => {
+        if (isAtLimit && !selectedToppings.includes(toppingId)) {
+            setShakeId(toppingId);
+            setTimeout(() => setShakeId(null), 500);
+            return;
+        }
+        toggleTopping(toppingId);
+    };
+
     return (
         <div className="w-full">
             {/* Title Section */}
-            <div className="mt-8 mb-10">
+            <div className="mt-8 mb-6">
                 <div className="flex justify-between items-end mb-4">
                     <div>
                         <p className="font-label text-[10px] font-bold uppercase tracking-widest text-[#FFB800] mb-2">Passo 4 de 7</p>
                         <h2 className="text-3xl font-black text-tertiary tracking-tight">Escolha sua Cobertura</h2>
                     </div>
-                    <div className="text-on-surface-variant font-body text-sm font-medium">Até {maxToppings} opções ({selectedToppings.length}/{maxToppings})</div>
+                    <div className={`font-body text-sm font-bold px-3 py-1.5 rounded-full transition-colors duration-300 ${isAtLimit ? 'bg-[#FFB800]/20 text-[#7C5800]' : 'text-on-surface-variant'}`}>
+                        {selectedToppings.length}/{maxToppings}
+                    </div>
                 </div>
             </div>
+
+            {/* Limit Reached Banner */}
+            <LimitReachedBanner current={selectedToppings.length} max={maxToppings} label="coberturas" />
 
             {/* Options List */}
             <div className="space-y-6 mb-12">
                 {toppings.map((topping) => {
                     const isSelected = selectedToppings.includes(topping.id);
+                    const isDisabled = isAtLimit && !isSelected;
+                    const isShaking = shakeId === topping.id;
+
                     return (
                         <div
                             key={topping.id}
-                            onClick={() => toggleTopping(topping.id)}
-                            className={`relative group cursor-pointer active:scale-95 transition-transform duration-200 editorial-shadow rounded-xl overflow-hidden bg-surface-container-lowest ${isSelected ? 'ring-2 ring-inverse-primary' : ''}`}
+                            onClick={() => handleCardClick(topping.id)}
+                            className={`
+                                relative group cursor-pointer active:scale-95 transition-transform duration-200 editorial-shadow rounded-xl overflow-hidden bg-surface-container-lowest
+                                ${isSelected ? 'ring-2 ring-inverse-primary' : ''}
+                                ${isDisabled ? 'opacity-40 grayscale-[0.3] cursor-not-allowed' : ''}
+                                ${isShaking ? 'animate-shake' : ''}
+                            `}
                         >
                             <div className="aspect-[16/7] w-full overflow-hidden relative">
                                 <Image

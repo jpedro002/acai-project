@@ -1,8 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import { useCatalog } from "@/app/hooks/useCatalog";
 import builderData from "@/app/data/builder-data.json";
 import Image from "next/image";
+import LimitReachedBanner from "./LimitReachedBanner";
 
 interface CreamsStepProps {
     selectedCreams: string[];
@@ -14,6 +16,9 @@ interface CreamsStepProps {
 
 export default function CreamsStep({ selectedCreams, setSelectedCreams, maxCreams, onNext, onBack }: CreamsStepProps) {
     const { items: creams } = useCatalog("cream", builderData.builder.creams);
+    const [shakeId, setShakeId] = useState<string | null>(null);
+
+    const isAtLimit = selectedCreams.length >= maxCreams;
 
     const toggleCream = (creamId: string) => {
         if (selectedCreams.includes(creamId)) {
@@ -25,17 +30,32 @@ export default function CreamsStep({ selectedCreams, setSelectedCreams, maxCream
         }
     };
 
+    const handleCardClick = (creamId: string) => {
+        if (isAtLimit && !selectedCreams.includes(creamId)) {
+            // Trigger shake animation
+            setShakeId(creamId);
+            setTimeout(() => setShakeId(null), 500);
+            return;
+        }
+        toggleCream(creamId);
+    };
+
     return (
         <div className="w-full">
             {/* Title Section */}
-            <div className="mt-8 mb-10">
+            <div className="mt-8 mb-6">
                 <div className="flex justify-between items-end mb-4">
                     <div>
                         <h2 className="text-3xl font-black text-tertiary tracking-tight">Escolha seus Cremes</h2>
                     </div>
-                    <div className="text-on-surface-variant font-body text-sm font-medium">Até {maxCreams} opções ({selectedCreams.length}/{maxCreams})</div>
+                    <div className={`font-body text-sm font-bold px-3 py-1.5 rounded-full transition-colors duration-300 ${isAtLimit ? 'bg-[#FFB800]/20 text-[#7C5800]' : 'text-on-surface-variant'}`}>
+                        {selectedCreams.length}/{maxCreams}
+                    </div>
                 </div>
             </div>
+
+            {/* Limit Reached Banner */}
+            <LimitReachedBanner current={selectedCreams.length} max={maxCreams} label="cremes" />
 
             {/* Asymmetric Hero Accent (Organic Texture) */}
             <div className="absolute -z-10 top-40 right-0 opacity-[0.04] pointer-events-none">
@@ -48,11 +68,20 @@ export default function CreamsStep({ selectedCreams, setSelectedCreams, maxCream
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
                 {creams.map((cream) => {
                     const isSelected = selectedCreams.includes(cream.id);
+                    const isDisabled = isAtLimit && !isSelected;
+                    const isShaking = shakeId === cream.id;
+
                     return (
                         <div
                             key={cream.id}
-                            onClick={() => toggleCream(cream.id)}
-                            className={`group relative bg-surface-container-lowest rounded-2xl p-4 shadow-[0_4px_32px_rgba(61,11,55,0.04)] border-2 transition-all cursor-pointer ${cream.isFeatured ? 'md:col-span-2' : ''} ${isSelected ? 'border-[#FFB800]' : 'border-transparent hover:border-[#FFB800]/20'}`}
+                            onClick={() => handleCardClick(cream.id)}
+                            className={`
+                                group relative bg-surface-container-lowest rounded-2xl p-4 shadow-[0_4px_32px_rgba(61,11,55,0.04)] border-2 transition-all cursor-pointer
+                                ${cream.isFeatured ? 'md:col-span-2' : ''}
+                                ${isSelected ? 'border-[#FFB800]' : 'border-transparent hover:border-[#FFB800]/20'}
+                                ${isDisabled ? 'opacity-40 grayscale-[0.3] cursor-not-allowed' : ''}
+                                ${isShaking ? 'animate-shake' : ''}
+                            `}
                         >
                             <div className={`flex ${cream.isFeatured ? 'flex-col md:flex-row gap-6' : 'flex-col'}`}>
                                 <div className={`${cream.isFeatured ? 'aspect-[16/9] md:w-1/2' : 'aspect-[4/3]'} rounded-xl overflow-hidden mb-4 relative`}>
@@ -70,7 +99,7 @@ export default function CreamsStep({ selectedCreams, setSelectedCreams, maxCream
                                             <h3 className={`${cream.isFeatured ? 'text-xl' : ''} font-bold text-tertiary tracking-tight`}>{cream.title}</h3>
                                             <p className={`text-xs text-on-surface-variant font-medium ${cream.isFeatured ? 'mt-1' : ''}`}>{cream.description}</p>
                                         </div>
-                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${isSelected ? 'bg-[#FFB800]' : 'border-2 border-surface-container group-hover:border-[#FFB800]'}`}>
+                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${isSelected ? 'bg-[#FFB800]' : isDisabled ? 'border-2 border-surface-container opacity-50' : 'border-2 border-surface-container group-hover:border-[#FFB800]'}`}>
                                             <span className={`material-symbols-outlined transition-transform ${isSelected ? 'text-[#271900] scale-100' : 'text-[#FFB800] scale-0 group-hover:scale-100'}`} style={isSelected ? { fontVariationSettings: "'FILL' 1" } : {}}>check</span>
                                         </div>
                                     </div>

@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useTransition } from 'react';
 import { signOut } from 'firebase/auth';
 import { auth } from '@/lib/firebase/client';
+import { LogOut } from 'lucide-react';
 
 export default function AdminLogoutButton() {
     const router = useRouter();
@@ -38,11 +39,14 @@ export default function AdminLogoutButton() {
             type="button"
             onClick={handleLogout}
             disabled={isPending}
-            className={`w-full rounded-lg p-3 text-center font-bold text-error transition-colors ${
-                isPending ? 'cursor-not-allowed opacity-60' : 'hover:bg-error-container'
+            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+                isPending
+                    ? 'cursor-not-allowed opacity-60 text-on-primary-container/40'
+                    : 'text-on-primary-container/60 hover:bg-on-primary-container/8 hover:text-on-primary-container'
             }`}
         >
-            {isPending ? 'Saindo...' : 'Sair'}
+            <LogOut className="w-[18px] h-[18px] shrink-0" />
+            <span>{isPending ? 'Saindo...' : 'Sair da conta'}</span>
         </button>
     );
 }

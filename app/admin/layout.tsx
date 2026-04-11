@@ -1,10 +1,17 @@
-import Link from 'next/link';
+import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { adminAuth, adminDb } from '@/lib/firebase/admin';
 import { ADMIN_SESSION_COOKIE_NAME } from '@/lib/auth/session';
-import AdminLogoutButton from './components/AdminLogoutButton';
+import AdminSidebar from './components/AdminSidebar';
 import { Toaster } from "@/components/ui/sonner";
+
+export const metadata: Metadata = {
+  title: 'Admin — Point dos Amigos',
+  other: {
+    // This signals the CSS to apply admin-specific styles
+  },
+};
 
 const getAllowedAdminEmails = () => {
   const rawValue = process.env.ADMIN_ALLOWED_EMAILS ?? 'admin@acai.com';
@@ -45,37 +52,17 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="flex h-screen bg-surface-container-low font-body text-on-surface">
-      {/* Sidebar */}
-      <aside className="w-64 bg-surface shadow-md flex flex-col">
-        <div className="p-6">
-          <h2 className="text-xl font-bold font-headline text-primary">Point dos amigos Admin</h2>
-        </div>
-        <nav className="flex-1 px-4 flex flex-col gap-2">
-          <Link href="/admin" className="p-3 hover:bg-surface-variant text-on-surface rounded-lg transition-colors">
-            Dashboard
-          </Link>
-          <Link href="/admin/users" className="p-3 hover:bg-surface-variant text-on-surface rounded-lg transition-colors">
-            Usuários
-          </Link>
-          <Link href="/admin/admins" className="p-3 hover:bg-surface-variant text-on-surface rounded-lg transition-colors">
-            Administradores
-          </Link>
-          <button type="button" className="p-3 text-left hover:bg-surface-variant rounded-lg transition-colors" disabled>
-            Pedidos
-          </button>
-          <Link href="/admin/catalog" className="p-3 hover:bg-surface-variant text-on-surface rounded-lg transition-colors">
-            Produtos
-          </Link>
-        </nav>
-        <div className="p-4 border-t border-outline-variant">
-          <AdminLogoutButton />
-        </div>
-      </aside>
+    <div
+      className="admin-layout flex h-dvh bg-surface-container-low font-body text-on-surface overflow-hidden"
+      style={{ height: '100dvh', maxHeight: '100dvh' }}
+    >
+      <AdminSidebar />
 
       {/* Main Content */}
-      <main className="flex-1 p-8 overflow-auto">
-        {children}
+      <main className="flex-1 flex flex-col overflow-hidden">
+        <div className="flex-1 p-6 overflow-auto">
+          {children}
+        </div>
       </main>
       <Toaster position="top-right" />
     </div>

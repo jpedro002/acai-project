@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import builderData from "@/app/data/builder-data.json";
 import { useConfigDoc } from "@/app/hooks/useConfigDoc";
+import { useCatalog } from "@/app/hooks/useCatalog";
 import { addCartItemAtom } from "@/app/state/cartAtoms";
 import { useSetAtom } from "jotai";
 import { useRouter } from "next/navigation";
@@ -13,6 +14,19 @@ import FruitsStep from "../components/builder/FruitsStep";
 import ToppingsStep from "../components/builder/ToppingsStep";
 import MixStep from "../components/builder/MixStep";
 import BoostStep from "../components/builder/BoostStep";
+
+interface BaseCatalogItem {
+    id: string;
+    title: string;
+    description: string;
+    prices: Record<string, number>;
+    imageUrl: string;
+    imageAlt: string;
+    badge?: string;
+    imageBgClass?: string;
+    type: string;
+    sizeLimits?: Record<string, { creams?: number; fruits?: number; toppings?: number; mix?: number }>;
+}
 
 export default function BuilderPage() {
     const router = useRouter();
@@ -49,16 +63,51 @@ export default function BuilderPage() {
         limits: builderData.builder.limits,
     });
 
-    const getLimitsForSize = (sizeId: string) => {
+    // Fetch bases from Firestore to get sizeLimits
+    const { items: catalogBases } = useCatalog<BaseCatalogItem>("base", builderData.builder.bases as unknown as BaseCatalogItem[]);
+
+    /**
+     * Resolve limits with fallback hierarchy:
+     * 1. base.sizeLimits[selectedSize] (most specific)
+     * 2. size.limits (from config)
+     * 3. builder.limits (global default)
+     */
+    const getLimitsForSize = (sizeId: string, baseId: string | null) => {
+        const globalDefaults = builderConfig.limits ?? builderData.builder.limits;
+
+        // Try base-specific limits first
+        if (baseId) {
+            const baseData = catalogBases.find((b) => b.id === baseId);
+            if (baseData?.sizeLimits?.[sizeId]) {
+                return {
+                    creams: baseData.sizeLimits[sizeId].creams ?? globalDefaults.creams,
+                    fruits: baseData.sizeLimits[sizeId].fruits ?? globalDefaults.fruits,
+                    toppings: baseData.sizeLimits[sizeId].toppings ?? globalDefaults.toppings,
+                    mix: baseData.sizeLimits[sizeId].mix ?? globalDefaults.mix,
+                };
+            }
+        }
+
+        // Fallback to size limits
         const size = builderConfig.sizes?.find((item: { id: string; limits?: { creams: number; fruits: number; toppings: number; mix: number } }) => item.id === sizeId);
-        return size?.limits ?? builderConfig.limits ?? builderData.builder.limits;
+        return size?.limits ?? globalDefaults;
     };
 
-    const selectedSizeLimits = getLimitsForSize(selectedSize);
+    const selectedSizeLimits = getLimitsForSize(selectedSize, selectedBase);
 
     const handleSelectedSizeChange = (sizeId: string) => {
-        const limits = getLimitsForSize(sizeId);
+        const limits = getLimitsForSize(sizeId, selectedBase);
         setSelectedSize(sizeId);
+        setSelectedCreams((prev) => prev.slice(0, limits.creams));
+        setSelectedFruits((prev) => prev.slice(0, limits.fruits));
+        setSelectedToppings((prev) => prev.slice(0, limits.toppings));
+        setSelectedMix((prev) => prev.slice(0, limits.mix));
+    };
+
+    // When base changes, recalculate limits and trim selections
+    const handleSelectedBaseChange = (baseId: string) => {
+        setSelectedBase(baseId);
+        const limits = getLimitsForSize(selectedSize, baseId);
         setSelectedCreams((prev) => prev.slice(0, limits.creams));
         setSelectedFruits((prev) => prev.slice(0, limits.fruits));
         setSelectedToppings((prev) => prev.slice(0, limits.toppings));
@@ -155,7 +204,7 @@ export default function BuilderPage() {
                 {step === 1 && (
                     <BaseStep
                         selectedBase={selectedBase}
-                        setSelectedBase={setSelectedBase}
+                        setSelectedBase={handleSelectedBaseChange}
                         selectedSize={selectedSize}
                         setSelectedSize={handleSelectedSizeChange}
                         onNext={() => setStep(2)}

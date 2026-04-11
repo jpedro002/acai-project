@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { collection, getDocs, doc, deleteDoc, setDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase/client';
 import { toast } from "sonner";
+import { useConfigDoc } from '@/app/hooks/useConfigDoc';
+import builderData from '@/app/data/builder-data.json';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -14,6 +16,18 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+
+interface SizeItem {
+    id: string;
+    label: string;
+    limits: {
+        creams: number;
+        fruits: number;
+        toppings: number;
+        mix: number;
+    };
+    type: string;
+}
 
 interface CatalogItem {
     id: string; // The inner ID (e.g. "especial")
@@ -29,6 +43,7 @@ interface CatalogItem {
     badge?: string;
     imageBgClass?: string;
     limits?: Record<string, number>;
+    sizeLimits?: Record<string, Record<string, number>>;
     [key: string]: any;
 }
 
@@ -73,6 +88,7 @@ export default function CatalogPage() {
             setLoading(false);
         }
     };
+
 
     useEffect(() => {
         fetchCatalog();
@@ -120,6 +136,73 @@ export default function CatalogPage() {
                 newLimits[category] = Number(value);
             }
             return { ...prev, limits: Object.keys(newLimits).length > 0 ? newLimits : undefined };
+        });
+    };
+
+    const handleSizeLimitChange = (sizeId: string, category: string, value: string) => {
+        setCurrentItem(prev => {
+            const currentSizeLimits = prev.sizeLimits ? { ...prev.sizeLimits } : {};
+            const currentSizeEntry = currentSizeLimits[sizeId] ? { ...currentSizeLimits[sizeId] } : {};
+            if (value === "") {
+                delete currentSizeEntry[category];
+            } else {
+                currentSizeEntry[category] = Number(value);
+            }
+            if (Object.keys(currentSizeEntry).length > 0) {
+                currentSizeLimits[sizeId] = currentSizeEntry;
+            } else {
+                delete currentSizeLimits[sizeId];
+            }
+            return { ...prev, sizeLimits: Object.keys(currentSizeLimits).length > 0 ? currentSizeLimits : undefined };
+        });
+    };
+
+    // State for adding a new size entry to a base
+    const [newSizeLabel, setNewSizeLabel] = useState('');
+
+    const getBaseSizeEntries = () => {
+        const prices = currentItem.prices || {};
+        return Object.keys(prices).map(sizeId => {
+            // Find matching global size for label
+            const globalSize = sizesFromCatalog.find(s => s.id === sizeId);
+            return {
+                id: sizeId,
+                label: globalSize?.label || sizeId,
+                price: prices[sizeId],
+                limits: currentItem.sizeLimits?.[sizeId] || {},
+            };
+        });
+    };
+
+    const addBaseSizeEntry = () => {
+        const label = newSizeLabel.trim();
+        if (!label) {
+            toast.error('Digite um nome para o tamanho.');
+            return;
+        }
+        const id = slugify(label);
+        if (currentItem.prices?.[id] !== undefined) {
+            toast.error(`Tamanho "${label}" já existe nesta base.`);
+            return;
+        }
+        setCurrentItem(prev => ({
+            ...prev,
+            prices: { ...(prev.prices || {}), [id]: 0 },
+        }));
+        setNewSizeLabel('');
+    };
+
+    const removeBaseSizeEntry = (sizeId: string) => {
+        setCurrentItem(prev => {
+            const newPrices = { ...(prev.prices || {}) };
+            delete newPrices[sizeId];
+            const newSizeLimits = prev.sizeLimits ? { ...prev.sizeLimits } : {};
+            delete newSizeLimits[sizeId];
+            return {
+                ...prev,
+                prices: Object.keys(newPrices).length > 0 ? newPrices : undefined,
+                sizeLimits: Object.keys(newSizeLimits).length > 0 ? newSizeLimits : undefined,
+            };
         });
     };
 
@@ -201,6 +284,28 @@ export default function CatalogPage() {
                 await deleteDoc(doc(db, 'catalog', docId));
             }
 
+            // Sync new sizes to configs/builder if this is a base
+            if (dataToSave.type === 'base' && dataToSave.prices) {
+                const priceKeys = Object.keys(dataToSave.prices);
+                const currentGlobalSizes = [...sizesFromCatalog];
+                let sizesChanged = false;
+                for (const sizeId of priceKeys) {
+                    if (!currentGlobalSizes.find(s => s.id === sizeId)) {
+                        currentGlobalSizes.push({
+                            id: sizeId,
+                            label: sizeId,
+                            limits: { creams: 3, fruits: 3, toppings: 1, mix: 2 },
+                            type: 'size',
+                        });
+                        sizesChanged = true;
+                    }
+                }
+                if (sizesChanged) {
+                    const configRef = doc(db, 'configs', 'builder');
+                    await setDoc(configRef, { ...builderConfig, sizes: currentGlobalSizes }, { merge: true });
+                }
+            }
+
             toast.success("Salvo com sucesso!");
             handleCloseModal();
             fetchCatalog();
@@ -228,7 +333,12 @@ export default function CatalogPage() {
         }
     };
 
-    const sizesFromCatalog = items.filter(i => i.type === 'size');
+    // Sizes live in configs/builder, not in the catalog collection
+    const { data: builderConfig } = useConfigDoc('builder', {
+        sizes: builderData.builder.sizes,
+        limits: builderData.builder.limits,
+    });
+    const sizesFromCatalog = (builderConfig.sizes ?? builderData.builder.sizes) as SizeItem[];
 
     return (
         <div className="flex flex-col gap-6">
@@ -400,25 +510,94 @@ export default function CatalogPage() {
                                 </div>
 
                                 {currentItem.type === 'base' || currentItem.type === 'gelato-base' ? (
-                                    <div className="col-span-1 md:col-span-2 bg-surface-container-high p-4 rounded-lg space-y-3 border border-outline-variant">
-                                        <label className="text-sm font-bold text-on-surface-variant block">Tabela de Preços por Tamanho</label>
-                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                            {sizesFromCatalog.length === 0 ? (
-                                                <span className="text-xs text-on-surface-variant col-span-2">Nenhum tamanho cadastrado no sistema. Crie um tamanho primeiro.</span>
-                                            ) : (
-                                                sizesFromCatalog.map(size => (
-                                                    <div key={size.id} className="space-y-1">
-                                                        <label className="text-xs font-bold text-on-surface-variant">{size.label || size.id} (R$)</label>
-                                                        <input
-                                                            type="number"
-                                                            step="0.01"
-                                                            value={currentItem.prices?.[size.id] ?? ''}
-                                                            onChange={(e) => handlePriceChange(size.id, e.target.value)}
-                                                            className="w-full bg-surface-container p-2 rounded-lg border border-outline focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
-                                                            placeholder="Ex: 15.90"
-                                                        />
+                                    <div className="col-span-1 md:col-span-2 bg-surface-container-high p-4 rounded-lg space-y-4 border border-outline-variant">
+                                        <div className="flex justify-between items-start">
+                                            <div>
+                                                <label className="text-sm font-bold text-on-surface-variant block">Tamanhos desta Base</label>
+                                                <p className="text-xs text-on-surface-variant/70 mt-0.5">Preço e limites para cada tamanho disponível.</p>
+                                            </div>
+                                        </div>
+
+                                        {getBaseSizeEntries().length === 0 ? (
+                                            <p className="text-xs text-on-surface-variant py-2">Nenhum tamanho adicionado. Use o campo abaixo para adicionar.</p>
+                                        ) : (
+                                            <div className="space-y-3">
+                                                {getBaseSizeEntries().map(entry => (
+                                                    <div key={entry.id} className="bg-surface-container rounded-xl p-4 space-y-3 border border-outline-variant/20">
+                                                        <div className="flex justify-between items-center">
+                                                            <div className="flex items-center gap-3">
+                                                                <span className="text-sm font-black text-tertiary-container uppercase tracking-wider">{entry.label}</span>
+                                                                <span className="text-[10px] text-on-surface-variant font-mono bg-surface-container-high px-2 py-0.5 rounded">id: {entry.id}</span>
+                                                            </div>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => removeBaseSizeEntry(entry.id)}
+                                                                className="text-error hover:bg-error/10 p-1 rounded-lg transition-colors"
+                                                                title="Remover tamanho"
+                                                            >
+                                                                <span className="material-symbols-outlined text-[18px]">close</span>
+                                                            </button>
+                                                        </div>
+
+                                                        <div className="grid grid-cols-5 gap-2">
+                                                            <div className="space-y-0.5">
+                                                                <label className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Preço (R$)</label>
+                                                                <input
+                                                                    type="number"
+                                                                    step="0.01"
+                                                                    value={currentItem.prices?.[entry.id] ?? ''}
+                                                                    onChange={(e) => handlePriceChange(entry.id, e.target.value)}
+                                                                    className="w-full bg-surface-container-lowest p-2 rounded-lg border border-outline focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-sm font-bold"
+                                                                    placeholder="0.00"
+                                                                />
+                                                            </div>
+                                                            {[
+                                                                { id: 'creams', label: 'Cremes' },
+                                                                { id: 'fruits', label: 'Frutas' },
+                                                                { id: 'toppings', label: 'Cob.' },
+                                                                { id: 'mix', label: 'Mix' },
+                                                            ].map(limit => {
+                                                                const globalDefault = sizesFromCatalog.find(s => s.id === entry.id)?.limits?.[limit.id as keyof SizeItem['limits']];
+                                                                return (
+                                                                    <div key={limit.id} className="space-y-0.5">
+                                                                        <label className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">{limit.label}</label>
+                                                                        <input
+                                                                            type="number"
+                                                                            min="0"
+                                                                            value={currentItem.sizeLimits?.[entry.id]?.[limit.id] ?? ''}
+                                                                            onChange={(e) => handleSizeLimitChange(entry.id, limit.id, e.target.value)}
+                                                                            className="w-full bg-surface-container-lowest p-2 rounded-lg border border-outline focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-sm"
+                                                                            placeholder={globalDefault?.toString() ?? '—'}
+                                                                        />
+                                                                    </div>
+                                                                );
+                                                            })}
+                                                        </div>
                                                     </div>
-                                                )))}
+                                                ))}
+                                            </div>
+                                        )}
+
+                                        {/* Add new size entry */}
+                                        <div className="flex items-end gap-2 pt-2 border-t border-outline-variant/30">
+                                            <div className="space-y-0.5 flex-1">
+                                                <label className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Nome do Tamanho</label>
+                                                <input
+                                                    type="text"
+                                                    value={newSizeLabel}
+                                                    onChange={(e) => setNewSizeLabel(e.target.value)}
+                                                    onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addBaseSizeEntry())}
+                                                    className="w-full bg-surface-container p-2 rounded-lg border border-outline focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-sm"
+                                                    placeholder="Ex: 500ml, 1 litro"
+                                                />
+                                            </div>
+                                            <button
+                                                type="button"
+                                                onClick={addBaseSizeEntry}
+                                                className="bg-secondary text-on-secondary px-4 py-2 rounded-lg font-bold text-sm hover:scale-105 transition-all shrink-0"
+                                            >
+                                                + Adicionar
+                                            </button>
                                         </div>
                                     </div>
                                 ) : null}
@@ -486,7 +665,7 @@ export default function CatalogPage() {
                                         className="w-full bg-surface-container p-3 rounded-lg border border-outline focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
                                     />
                                 </div>
-                                <div className="space-y-1">
+                                {/* <div className="space-y-1">
                                     <label className="text-sm font-bold text-on-surface-variant block">Cor de Fundo (Tailwind)</label>
                                     <input
                                         type="text"
@@ -496,7 +675,7 @@ export default function CatalogPage() {
                                         className="w-full bg-surface-container p-3 rounded-lg border border-outline focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
                                         placeholder="Ex: bg-tertiary-container"
                                     />
-                                </div>
+                                </div> */}
                             </form>
                         </div>
 

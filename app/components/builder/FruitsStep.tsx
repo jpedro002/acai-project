@@ -1,8 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import { useCatalog } from "@/app/hooks/useCatalog";
 import builderData from "@/app/data/builder-data.json";
 import Image from "next/image";
+import LimitReachedBanner from "./LimitReachedBanner";
 
 interface FruitsStepProps {
     selectedFruits: string[];
@@ -14,6 +16,9 @@ interface FruitsStepProps {
 
 export default function FruitsStep({ selectedFruits, setSelectedFruits, maxFruits, onNext, onBack }: FruitsStepProps) {
     const { items: fruits } = useCatalog("fruit", builderData.builder.fruits);
+    const [shakeId, setShakeId] = useState<string | null>(null);
+
+    const isAtLimit = selectedFruits.length >= maxFruits;
 
     const toggleFruit = (fruitId: string) => {
         if (selectedFruits.includes(fruitId)) {
@@ -25,27 +30,49 @@ export default function FruitsStep({ selectedFruits, setSelectedFruits, maxFruit
         }
     };
 
+    const handleCardClick = (fruitId: string) => {
+        if (isAtLimit && !selectedFruits.includes(fruitId)) {
+            setShakeId(fruitId);
+            setTimeout(() => setShakeId(null), 500);
+            return;
+        }
+        toggleFruit(fruitId);
+    };
+
     return (
         <div className="w-full">
             {/* Title Section */}
-            <div className="mt-8 mb-10">
+            <div className="mt-8 mb-6">
                 <div className="flex justify-between items-end mb-4">
                     <div>
                         <h2 className="text-3xl font-black text-tertiary tracking-tight">Escolha suas Frutas</h2>
                     </div>
-                    <div className="text-on-surface-variant font-body text-sm font-medium">Até {maxFruits} opções ({selectedFruits.length}/{maxFruits})</div>
+                    <div className={`font-body text-sm font-bold px-3 py-1.5 rounded-full transition-colors duration-300 ${isAtLimit ? 'bg-[#FFB800]/20 text-[#7C5800]' : 'text-on-surface-variant'}`}>
+                        {selectedFruits.length}/{maxFruits}
+                    </div>
                 </div>
             </div>
+
+            {/* Limit Reached Banner */}
+            <LimitReachedBanner current={selectedFruits.length} max={maxFruits} label="frutas" />
 
             {/* Options List */}
             <div className="space-y-6 mb-12">
                 {fruits.map((fruit) => {
                     const isSelected = selectedFruits.includes(fruit.id);
+                    const isDisabled = isAtLimit && !isSelected;
+                    const isShaking = shakeId === fruit.id;
+
                     return (
                         <div
                             key={fruit.id}
-                            onClick={() => toggleFruit(fruit.id)}
-                            className={`relative group cursor-pointer active:scale-95 transition-transform duration-200 editorial-shadow rounded-xl overflow-hidden bg-surface-container-lowest ${isSelected ? 'ring-2 ring-inverse-primary' : ''}`}
+                            onClick={() => handleCardClick(fruit.id)}
+                            className={`
+                                relative group cursor-pointer active:scale-95 transition-transform duration-200 editorial-shadow rounded-xl overflow-hidden bg-surface-container-lowest
+                                ${isSelected ? 'ring-2 ring-inverse-primary' : ''}
+                                ${isDisabled ? 'opacity-40 grayscale-[0.3] cursor-not-allowed' : ''}
+                                ${isShaking ? 'animate-shake' : ''}
+                            `}
                         >
                             <div className="aspect-[16/7] w-full overflow-hidden relative">
                                 <Image
