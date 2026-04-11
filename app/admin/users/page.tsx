@@ -160,7 +160,7 @@ export default function UsersPage() {
   );
 
   return (
-    <div className="flex h-full gap-6">
+    <div className="flex items-start gap-6 relative">
       {/* Main Panel */}
       <div
         className={`flex flex-col gap-6 transition-all duration-300 ${
@@ -250,7 +250,7 @@ export default function UsersPage() {
         </div>
 
         {/* Table */}
-        <div className="bg-surface rounded-2xl shadow-sm overflow-hidden flex-1 overflow-y-auto">
+        <div className="bg-surface rounded-2xl shadow-sm overflow-hidden">
           {loading ? (
             <div className="flex items-center justify-center py-20">
               <Loader2 className="w-6 h-6 text-primary animate-spin" />
@@ -354,7 +354,7 @@ export default function UsersPage() {
 
       {/* Detail Panel */}
       {selectedUser && (
-        <div className="w-2/5 bg-surface rounded-2xl shadow-xl flex flex-col overflow-hidden animate-in slide-in-from-right-8 duration-300 shrink-0">
+        <div className="w-2/5 bg-surface rounded-2xl shadow-xl flex flex-col overflow-hidden animate-in slide-in-from-right-8 duration-300 shrink-0 sticky top-0 max-h-[calc(100dvh-3rem)]">
           {/* Panel Header */}
           <div className="px-6 py-5 bg-surface border-b border-outline-variant/10 flex justify-between items-start shrink-0">
             <div className="flex items-center gap-4">

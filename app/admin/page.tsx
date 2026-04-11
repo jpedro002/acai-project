@@ -233,7 +233,7 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="flex flex-col h-full gap-6">
+    <div className={`flex flex-col gap-6 ${viewMode === "kanban" ? "flex-1 min-h-[calc(100dvh-3rem)]" : ""}`}>
       {/* Header Dashboard Simplificado */}
       <header className="flex justify-between items-center bg-surface p-6 rounded-2xl shadow-sm shrink-0">
         <div>
@@ -398,7 +398,7 @@ export default function AdminDashboard() {
 
       {/* Table View */}
       {viewMode === "table" && (
-        <div className="flex-1 overflow-auto pb-4">
+        <div className="flex-1 pb-4">
           <div className="bg-surface rounded-2xl shadow-sm overflow-hidden">
             {/* Summary bar */}
             <div className="flex items-center gap-6 px-6 py-4 border-b border-outline-variant/10">

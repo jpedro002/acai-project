@@ -197,7 +197,7 @@ export default function AdminsPage() {
   };
 
   return (
-    <div className="flex flex-col gap-6 h-full">
+    <div className="flex flex-col gap-6">
       {/* Header */}
       <header className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 bg-surface p-6 rounded-2xl shadow-sm">
         <div className="flex items-center gap-4">
@@ -288,7 +288,7 @@ export default function AdminsPage() {
       </div>
 
       {/* Table */}
-      <div className="bg-surface rounded-2xl shadow-sm overflow-hidden flex-1">
+      <div className="bg-surface rounded-2xl shadow-sm overflow-hidden">
         {loading ? (
           <div className="flex items-center justify-center py-20">
             <Loader2 className="w-6 h-6 text-primary animate-spin" />
