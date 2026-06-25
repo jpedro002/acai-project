@@ -275,7 +275,7 @@ export default function CatalogPage() {
             const docRef = doc(db, 'catalog', targetDocId);
 
             // Clean up undefined fields
-            const cleanData = Object.fromEntries(Object.entries(dataToSave).filter(([_, v]) => v !== undefined));
+            const cleanData = Object.fromEntries(Object.entries(dataToSave).filter(([, v]) => v !== undefined));
 
             await setDoc(docRef, cleanData);
 

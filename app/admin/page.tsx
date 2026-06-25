@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { collection, query, orderBy, onSnapshot, doc, updateDoc, where, Timestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase/client";
 import {
-  Search, Bell, HelpCircle, MapPin,
+  Search, Bell, MapPin,
   ListChecks, MoreHorizontal,
   Phone, MessageCircle, Receipt, CreditCard,
   IceCream, ShoppingBag, Check, X, Clock, ChefHat, Truck, CheckCircle, ExternalLink,
@@ -23,11 +23,9 @@ import {
 import { DragEndEvent } from "@dnd-kit/core";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Button } from "@/components/ui/button";
 import {
   Table, TableHeader, TableBody, TableHead, TableRow, TableCell,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 
 // --- Tipagens ---
 type OrderItem = {

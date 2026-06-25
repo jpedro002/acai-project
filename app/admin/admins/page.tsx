@@ -71,7 +71,7 @@ export default function AdminsPage() {
       if (!res.ok) throw new Error('Erro ao buscar administradores');
       const data = await res.json();
       setAdmins(data.admins || []);
-    } catch (err) {
+    } catch {
       toast.error('Não foi possível carregar os administradores');
     } finally {
       setLoading(false);

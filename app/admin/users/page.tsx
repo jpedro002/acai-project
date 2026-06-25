@@ -27,7 +27,6 @@ import {
   TableRow,
   TableCell,
 } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 
 interface UserData {

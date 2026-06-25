@@ -7,7 +7,6 @@ import {
   Users,
   ShieldCheck,
   Package,
-  LogOut,
   ChevronRight,
   Store,
 } from 'lucide-react';
