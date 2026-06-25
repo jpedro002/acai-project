@@ -4,7 +4,6 @@ import { redirect } from 'next/navigation';
 import { adminAuth, adminDb } from '@/lib/firebase/admin';
 import { ADMIN_SESSION_COOKIE_NAME } from '@/lib/auth/session';
 import AdminSidebar from './components/AdminSidebar';
-import { Toaster } from "@/components/ui/sonner";
 
 export const metadata: Metadata = {
   title: 'Admin — Point dos Amigos',
@@ -64,7 +63,6 @@ export default async function AdminLayout({
           {children}
         </div>
       </main>
-      <Toaster position="top-right" />
     </div>
   );
 }

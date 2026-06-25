@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import JotaiProvider from "./providers/JotaiProvider";
 import ScrollToTop from "./components/ScrollToTop";
+import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 import { Inter } from "next/font/google";
 import { cn } from "@/lib/utils";
@@ -31,6 +32,7 @@ export default function RootLayout({
           </Suspense>
           {children}
         </JotaiProvider>
+        <Toaster position="top-right" />
       </body>
     </html>
   );

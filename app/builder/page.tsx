@@ -7,6 +7,7 @@ import { useCatalog } from "@/app/hooks/useCatalog";
 import { addCartItemAtom } from "@/app/state/cartAtoms";
 import { useSetAtom } from "jotai";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import LayoutHeader from "../components/shared/LayoutHeader";
 import BaseStep from "../components/builder/BaseStep";
 import CreamsStep from "../components/builder/CreamsStep";
@@ -129,14 +130,14 @@ export default function BuilderPage() {
 
     const handleFinishOrder = () => {
         if (!selectedBase) {
-            alert("Escolha uma base antes de finalizar.");
+            toast.error("Escolha uma base antes de finalizar.");
             return;
         }
 
         const selectedBaseData = builderData.builder.bases.find((base) => base.id === selectedBase);
 
         if (!selectedBaseData) {
-            alert("Não foi possível montar o item selecionado.");
+            toast.error("Não foi possível montar o item selecionado.");
             return;
         }
 
@@ -184,7 +185,7 @@ export default function BuilderPage() {
             },
         });
 
-        alert("Item adicionado ao carrinho com sucesso!");
+        toast.success("Item adicionado ao carrinho!");
         router.push("/meu-carrinho");
     };
 

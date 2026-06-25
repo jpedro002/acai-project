@@ -8,6 +8,7 @@ import {
     CheckCircle, XCircle
 } from "lucide-react";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { toast } from "sonner";
 import { db } from "@/lib/firebase/client";
 import { CartItemType } from "@/app/state/cartAtoms";
 
@@ -70,7 +71,7 @@ export default function OrderDetailsPage({ params }: { params: Promise<{ id: str
             setOrder({ ...order, status: newStatus });
         } catch (error) {
             console.error("Error updating status:", error);
-            alert("Erro ao atualizar o pedido.");
+            toast.error("Erro ao atualizar o pedido.");
         } finally {
             setUpdating(false);
         }
@@ -369,9 +370,13 @@ export default function OrderDetailsPage({ params }: { params: Promise<{ id: str
                             {order.status !== 'cancelled' && order.status !== 'delivered' && (
                                 <button
                                     onClick={() => {
-                                        if (window.confirm('Tem certeza que deseja cancelar este pedido?')) {
-                                            updateOrderStatus('cancelled');
-                                        }
+                                        toast('Cancelar este pedido?', {
+                                            description: 'Esta ação não pode ser desfeita.',
+                                            action: {
+                                                label: 'Cancelar pedido',
+                                                onClick: () => updateOrderStatus('cancelled'),
+                                            },
+                                        });
                                     }}
                                     disabled={updating}
                                     className="bg-surface text-error border-2 border-error/20 py-4 px-6 rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-error/5 transition-colors disabled:opacity-70"

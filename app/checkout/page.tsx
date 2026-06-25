@@ -4,6 +4,7 @@ import LayoutHeader from '@/app/components/shared/LayoutHeader';
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAtomValue, useSetAtom } from 'jotai';
+import { toast } from 'sonner';
 import { onAuthStateChanged, signOut, User } from 'firebase/auth';
 
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
@@ -84,17 +85,17 @@ export default function CheckoutPage() {
     if (!mounted) return;
 
     if (!authUser) {
-      alert('Entre com seu número para finalizar o pedido.');
+      toast.error('Entre com seu número para finalizar o pedido.');
       return;
     }
 
     if (cartItems.length === 0) {
-      alert('Seu carrinho está vazio. Adicione um item para continuar.');
+      toast.error('Seu carrinho está vazio. Adicione um item para continuar.');
       return;
     }
 
     if (!customerName.trim() || !phone.trim() || !street.trim() || !neighborhood) {
-      alert('Preencha nome, telefone, endereço e bairro para finalizar.');
+      toast.error('Preencha nome, telefone, endereço e bairro para finalizar.');
       return;
     }
 
@@ -127,11 +128,11 @@ export default function CheckoutPage() {
       });
 
       clearCart();
-      alert('Pedido criado com sucesso!');
-      router.push('/');
+      toast.success('Pedido criado com sucesso!');
+      router.push('/meus-pedidos');
     } catch (e) {
       console.error(e);
-      alert('Não foi possível criar o pedido. Tente novamente.');
+      toast.error('Não foi possível criar o pedido. Tente novamente.');
     } finally {
       setIsSubmitting(false);
     }

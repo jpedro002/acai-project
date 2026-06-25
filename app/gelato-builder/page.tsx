@@ -6,6 +6,7 @@ import { useConfigDoc } from "@/app/hooks/useConfigDoc";
 import { addCartItemAtom } from "@/app/state/cartAtoms";
 import { useSetAtom } from "jotai";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import LayoutHeader from "../components/shared/LayoutHeader";
 import GelatoBaseStep from "../components/builder/GelatoBaseStep";
 import CreamsStep from "../components/builder/CreamsStep";
@@ -81,7 +82,7 @@ export default function GelatoBuilderPage() {
     const handleFinishOrder = () => {
         const selectedSizeData = gelatoConfig.sizes.find((size: { value: string; title: string; price: string }) => size.value === selectedSize);
         if (!selectedSizeData) {
-            alert("Escolha um tamanho antes de finalizar.");
+            toast.error("Escolha um tamanho antes de finalizar.");
             return;
         }
 
@@ -128,7 +129,7 @@ export default function GelatoBuilderPage() {
             },
         });
 
-        alert("Item adicionado ao carrinho com sucesso!");
+        toast.success("Item adicionado ao carrinho!");
         router.push("/meu-carrinho");
     };
 
