@@ -104,6 +104,15 @@ export default function LayoutHeader() {
                 <span className="font-semibold text-lg">Montar Gelato</span>
               </Link>
 
+              <Link
+                href="/meus-pedidos"
+                className="flex items-center gap-3 text-on-surface hover:text-[#3D0B37] transition-colors p-2 rounded-lg hover:bg-surface-container-high"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <span className="material-symbols-outlined">receipt_long</span>
+                <span className="font-semibold text-lg">Meus Pedidos</span>
+              </Link>
+
               <div className="pt-4 mt-4 border-t border-outline-variant/20">
                 <Link
                   href="/admin"
