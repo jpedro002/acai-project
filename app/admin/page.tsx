@@ -55,67 +55,6 @@ type Order = KanbanItemProps & {
   items: OrderItem[];
 };
 
-// --- Mock Data ---
-const INITIAL_ORDERS: Order[] = [
-  {
-    id: "LNVAvq8YscFCUy3wFY56",
-    column: "pending",
-    name: "João Pedro", // Obrigatório pro KanbanCard
-    status: "pending",
-    createdAt: { seconds: Math.floor(Date.now() / 1000) - 600, nanoseconds: 192000000 },
-    customer: { uid: "4BXZ48ngEIcvNx4ka8Jk73WBYLJ3", name: "João Pedro", phone: "85986222725" },
-    delivery: { method: "delivery", fee: 7.00, address: { street: "Tv Dom Luiz", number: "71", neighborhood: "Centro" } },
-    payment: { method: "cartao", status: "pending", subtotal: 18.00, total: 25.00 },
-    items: [
-      {
-        id: "9feeb26c-19cf-4174-9ffb-81af43f8fd09",
-        name: "Gelato P",
-        kind: "gelato",
-        quantity: 1,
-        price: 18.00,
-        selections: {
-          creams: ["TAPIOCA CREMOSA"],
-          fruits: ["Manga"],
-          toppings: ["COB. MORANGO"],
-          mix: ["MIX MM", "MIX GRANULADO CHOCOLATE"],
-          boosts: { "oreo": 1, "extra-nutella": 2 }
-        },
-        flavorSummary: "Tapioca, Manga, Morango, MM, Granulado"
-      }
-    ]
-  },
-  {
-    id: "ORD-2845",
-    column: "preparing",
-    name: "Mariana Lima",
-    status: "preparing",
-    createdAt: { seconds: Math.floor(Date.now() / 1000) - 1800, nanoseconds: 0 },
-    customer: { uid: "CUST-2", name: "Mariana Lima", phone: "11987654321" },
-    delivery: { method: "delivery", fee: 5.00, address: { street: "Rua das Flores", number: "123", neighborhood: "Jardim Paulista" } },
-    payment: { method: "pix", status: "paid", subtotal: 40.90, total: 45.90 },
-    items: [
-      {
-        id: "item-2", name: "Super Açaí (750ml)", kind: "acai", quantity: 1, price: 40.90,
-        selections: { boosts: { "Whey Protein": 1 } },
-        flavorSummary: "Leite Condensado, Paçoca, Morango"
-      }
-    ]
-  },
-  {
-    id: "ORD-2840",
-    column: "out_for_delivery",
-    name: "Roberto Rocha",
-    status: "out_for_delivery",
-    createdAt: { seconds: Math.floor(Date.now() / 1000) - 3600, nanoseconds: 0 },
-    customer: { uid: "CUST-3", name: "Roberto Rocha", phone: "21988887777" },
-    delivery: { method: "delivery", fee: 0, address: { street: "Av Paulista", number: "1000", neighborhood: "Bela Vista" } },
-    payment: { method: "dinheiro", status: "pending", subtotal: 89.00, total: 89.00 },
-    items: [
-      { id: "item-3", name: "Combo Familiar 1kg Açaí", kind: "acai", quantity: 1, price: 89.00, flavorSummary: "2x Granola, 2x Leite Ninho" }
-    ]
-  }
-];
-
 const COLUMNS = [
   { id: "pending", name: "Pendente", bgBadge: "bg-amber-100 text-amber-700", border: "border-amber-400", icon: Clock },
   { id: "preparing", name: "Em Preparo", bgBadge: "bg-blue-100 text-blue-700", border: "border-blue-400", icon: ChefHat },
@@ -166,6 +105,11 @@ export default function AdminDashboard() {
       snapshot.forEach((docSnap) => {
         const data = docSnap.data();
 
+        // Normalize the checkout write-shape (flat: deliveryAddress / paymentMethod /
+        // top-level totals) into the nested shape this view renders. Falls back to the
+        // legacy nested shape (data.delivery / data.payment) for older documents.
+        const rawItems = Array.isArray(data.items) ? data.items : [];
+
         ordersData.push({
           id: docSnap.id,
           column: data.status || "pending",
@@ -173,9 +117,26 @@ export default function AdminDashboard() {
           status: data.status || "pending",
           createdAt: data.createdAt || { seconds: Date.now() / 1000, nanoseconds: 0 },
           customer: data.customer || { uid: "", name: data.customerName || "Cliente", phone: "" },
-          delivery: data.delivery || { method: "takeaway", fee: 0, address: { street: "", number: "", neighborhood: "" } },
-          payment: data.payment || { method: "-", status: "pending", subtotal: data.total || 0, total: data.total || 0 },
-          items: Array.isArray(data.items) ? data.items : [],
+          delivery: {
+            method: data.delivery?.method || (data.deliveryAddress ? "delivery" : "takeaway"),
+            fee: data.deliveryFee ?? data.delivery?.fee ?? 0,
+            address: {
+              street: data.deliveryAddress?.street ?? data.delivery?.address?.street ?? "",
+              number: data.deliveryAddress?.number ?? data.delivery?.address?.number ?? "",
+              neighborhood: data.deliveryAddress?.neighborhood ?? data.delivery?.address?.neighborhood ?? "",
+              complement: data.deliveryAddress?.complement ?? data.delivery?.address?.complement,
+            },
+          },
+          payment: {
+            method: data.paymentMethod ?? data.payment?.method ?? "-",
+            status: data.payment?.status ?? "pending",
+            subtotal: data.subtotal ?? data.payment?.subtotal ?? data.total ?? 0,
+            total: data.total ?? data.payment?.total ?? 0,
+          },
+          items: rawItems.map((item: Record<string, unknown>) => ({
+            ...item,
+            flavorSummary: (item.flavorSummary as string) || (item.flavor as string) || "",
+          })) as OrderItem[],
         });
       });
 

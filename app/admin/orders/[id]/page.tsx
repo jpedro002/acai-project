@@ -100,7 +100,7 @@ export default function OrderDetailsPage({ params }: { params: Promise<{ id: str
         preparing: { label: "Em Preparo", color: "bg-blue-100 text-blue-800" },
         out_for_delivery: { label: "Saiu para Entrega", color: "bg-purple-100 text-purple-800" },
         delivered: { label: "Entregue", color: "bg-emerald-100 text-emerald-800" },
-        canceled: { label: "Cancelado", color: "bg-red-100 text-red-800" }
+        cancelled: { label: "Cancelado", color: "bg-red-100 text-red-800" }
     };
 
     const currentStatus = statusMap[order.status] || { label: order.status, color: "bg-surface-variant text-on-surface-variant" };
@@ -366,11 +366,11 @@ export default function OrderDetailsPage({ params }: { params: Promise<{ id: str
                                     Marcar como Entregue
                                 </button>
                             )}
-                            {order.status !== 'canceled' && order.status !== 'delivered' && (
+                            {order.status !== 'cancelled' && order.status !== 'delivered' && (
                                 <button
                                     onClick={() => {
                                         if (window.confirm('Tem certeza que deseja cancelar este pedido?')) {
-                                            updateOrderStatus('canceled');
+                                            updateOrderStatus('cancelled');
                                         }
                                     }}
                                     disabled={updating}
