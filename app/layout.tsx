@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import JotaiProvider from "./providers/JotaiProvider";
 import ScrollToTop from "./components/ScrollToTop";
 import "./globals.css";
@@ -25,7 +26,9 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen flex flex-col font-body bg-background text-on-background">
         <JotaiProvider>
-          <ScrollToTop />
+          <Suspense fallback={null}>
+            <ScrollToTop />
+          </Suspense>
           {children}
         </JotaiProvider>
       </body>

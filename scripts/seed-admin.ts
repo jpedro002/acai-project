@@ -2,20 +2,27 @@ import admin from 'firebase-admin';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
 
-// Carrega o .env.local (igual fazemos no seed de catálogo)
-const envPath = resolve(process.cwd(), '.env.local');
-try {
-    const envContent = readFileSync(envPath, 'utf-8');
-    envContent.split('\n').forEach(line => {
-        const [key, ...valueParts] = line.split('=');
-        if (key && !key.startsWith('#')) {
-            const value = valueParts.join('=').replace(/^"(.*)"$/, '$1');
-            process.env[key.trim()] = value.trim();
+// Carrega variáveis do .env.local ou .env (igual fazemos no seed de catálogo)
+const loadEnvFile = () => {
+    for (const file of ['.env.local', '.env']) {
+        try {
+            const envContent = readFileSync(resolve(process.cwd(), file), 'utf-8');
+            envContent.split('\n').forEach(line => {
+                const [key, ...valueParts] = line.split('=');
+                if (key && !key.startsWith('#')) {
+                    const value = valueParts.join('=').replace(/^"(.*)"$/, '$1');
+                    process.env[key.trim()] = value.trim();
+                }
+            });
+            return;
+        } catch {
+            // tenta o próximo arquivo
         }
-    });
-} catch {
-    console.warn('⚠️ Não foi possível ler .env.local, usando variáveis de ambiente do sistema.');
-}
+    }
+    console.warn('⚠️ Não foi possível ler .env.local nem .env, usando variáveis de ambiente do sistema.');
+};
+
+loadEnvFile();
 
 // Verifica e inicializa as credenciais
 const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
@@ -57,9 +64,10 @@ async function createAdminUser() {
                 emailVerified: true,
             });
             console.log(`✅ Usuário criado no Firebase Auth com UID: ${userRecord.uid}`);
-        } catch (error: any) {
+        } catch (error: unknown) {
             // Se o e-mail já existe, vamos pegar o UID existente para transformá-lo em admin
-            if (error.code === 'auth/email-already-exists') {
+            const code = (error as { code?: string }).code;
+            if (code === 'auth/email-already-exists') {
                 console.log(`ℹ️ O e-mail ${email} já existe no Auth. Vamos atualizar suas permissões.`);
                 userRecord = await auth.getUserByEmail(email);
             } else {

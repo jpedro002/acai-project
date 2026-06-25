@@ -30,7 +30,7 @@ interface OrderType {
     subtotal: number;
     deliveryFee: number;
     total: number;
-    createdAt: any;
+    createdAt: { seconds: number; nanoseconds: number } | null;
 }
 
 export default function OrderDetailsPage({ params }: { params: Promise<{ id: string }> }) {
@@ -230,7 +230,7 @@ export default function OrderDetailsPage({ params }: { params: Promise<{ id: str
                                             {item.selections?.observations && (
                                                 <div className="mt-4 bg-surface-variant/50 p-3 rounded-xl border border-dashed border-outline-variant">
                                                     <p className="text-[10px] font-bold text-outline uppercase tracking-widest mb-1">Observações</p>
-                                                    <p className="text-xs text-on-surface-variant italic">"{item.selections.observations}"</p>
+                                                    <p className="text-xs text-on-surface-variant italic">&ldquo;{item.selections.observations}&rdquo;</p>
                                                 </div>
                                             )}
                                         </div>

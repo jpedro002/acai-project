@@ -14,6 +14,7 @@ export default function LimitReachedBanner({ current, max, label }: LimitReached
 
     useEffect(() => {
         if (isAtLimit) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setShow(true);
         } else {
             // small delay to let exit transition play if needed

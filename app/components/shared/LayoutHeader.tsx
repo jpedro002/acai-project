@@ -13,6 +13,8 @@ export default function LayoutHeader() {
   const cartCount = useAtomValue(cartCountAtom);
 
   useEffect(() => {
+    // Hydration guard: cart count comes from localStorage, only known client-side.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
 

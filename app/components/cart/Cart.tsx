@@ -29,6 +29,8 @@ export default function Cart({
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
+        // Hydration guard: cart is persisted in localStorage, only known client-side.
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setMounted(true);
     }, []);
 

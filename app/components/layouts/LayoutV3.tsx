@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import LayoutHeader from "../shared/LayoutHeader";
 
 export default function LayoutV3() {
@@ -84,22 +85,22 @@ export default function LayoutV3() {
 
       {/* Bottom Navigation Shell */}
       <nav className="fixed bottom-0 left-0 w-full h-20 flex justify-around items-center px-4 pb-2 bg-white/90 backdrop-blur-xl z-50 rounded-t-[24px] shadow-[0_-8px_32px_rgba(61,11,55,0.06)] md:hidden">
-        <a href="/?layout=v1" className="flex flex-col items-center justify-center text-[#3D0B37] px-4 py-2 hover:opacity-80 transition-all active:scale-95">
+        <Link href="/?layout=v1" className="flex flex-col items-center justify-center text-[#3D0B37] px-4 py-2 hover:opacity-80 transition-all active:scale-95">
           <span className="material-symbols-outlined">home</span>
           <span className="font-body text-[10px] font-bold uppercase tracking-widest">Início</span>
-        </a>
-        <a href="/?layout=v2" className="flex flex-col items-center justify-center text-[#3D0B37] px-4 py-2 hover:opacity-80 transition-all active:scale-95">
+        </Link>
+        <Link href="/?layout=v2" className="flex flex-col items-center justify-center text-[#3D0B37] px-4 py-2 hover:opacity-80 transition-all active:scale-95">
           <span className="material-symbols-outlined">restaurant_menu</span>
           <span className="font-body text-[10px] font-bold uppercase tracking-widest">V2</span>
-        </a>
-        <a href="/?layout=v3" className="flex flex-col items-center justify-center bg-[#FFB800] text-[#271900] rounded-full px-6 py-2 transition-all scale-105 active:scale-95">
+        </Link>
+        <Link href="/?layout=v3" className="flex flex-col items-center justify-center bg-[#FFB800] text-[#271900] rounded-full px-6 py-2 transition-all scale-105 active:scale-95">
           <span className="material-symbols-outlined">favorite</span>
           <span className="font-body text-[10px] font-bold uppercase tracking-widest">V3</span>
-        </a>
-        <a href="/admin" className="flex flex-col items-center justify-center text-[#3D0B37] px-4 py-2 hover:opacity-80 transition-all active:scale-95">
+        </Link>
+        <Link href="/admin" className="flex flex-col items-center justify-center text-[#3D0B37] px-4 py-2 hover:opacity-80 transition-all active:scale-95">
           <span className="material-symbols-outlined">person</span>
           <span className="font-body text-[10px] font-bold uppercase tracking-widest">Perfil</span>
-        </a>
+        </Link>
       </nav>
     </div>
   );

@@ -26,6 +26,8 @@ interface BaseCatalogItem {
     imageBgClass?: string;
     type: string;
     sizeLimits?: Record<string, { creams?: number; fruits?: number; toppings?: number; mix?: number }>;
+    // Index signature required by useCatalog<T extends Record<string, unknown>>
+    [key: string]: unknown;
 }
 
 export default function BuilderPage() {

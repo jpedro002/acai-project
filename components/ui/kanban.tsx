@@ -25,7 +25,6 @@ import {
   type HTMLAttributes,
   type ReactNode,
   useContext,
-  useEffect,
   useState,
 } from "react"
 import { createPortal } from "react-dom"
@@ -160,7 +159,7 @@ export const KanbanCards = <T extends KanbanItemProps = KanbanItemProps>({
   return (
     <ScrollArea className="overflow-hidden">
       <SortableContext items={items}>
-        <div className={cn("flex flex-grow flex-col gap-2 p-2", className)} {...(props as any)}>
+        <div className={cn("flex flex-grow flex-col gap-2 p-2", className)} {...props}>
           {filteredData.map(children)}
         </div>
       </SortableContext>
@@ -172,7 +171,7 @@ export const KanbanCards = <T extends KanbanItemProps = KanbanItemProps>({
 export type KanbanHeaderProps = HTMLAttributes<HTMLDivElement>
 
 export const KanbanHeader = ({ className, ...props }: KanbanHeaderProps) => (
-  <div className={cn("m-0 p-2 font-semibold text-sm", className)} {...(props as any)} />
+  <div className={cn("m-0 p-2 font-semibold text-sm", className)} {...props} />
 )
 
 export type KanbanProviderProps<
@@ -306,7 +305,7 @@ export const KanbanProvider = <
         onDragOver={handleDragOver}
         onDragStart={handleDragStart}
         sensors={sensors}
-        {...(props as any)}
+        {...props}
       >
         <div className={cn("grid size-full auto-cols-fr grid-flow-col gap-4", className)}>
           {columns.map(column => children(column))}
@@ -320,55 +319,5 @@ export const KanbanProvider = <
           )}
       </DndContext>
     </KanbanContext.Provider>
-  )
-}
-
-// Demo
-const demoColumns = [
-  { id: "backlog", name: "Backlog" },
-  { id: "todo", name: "To Do" },
-  { id: "in-progress", name: "In Progress" },
-  { id: "done", name: "Done" },
-]
-
-const initialDemoData = [
-  { id: "1", name: "Research competitors", column: "done" },
-  { id: "2", name: "Define user personas", column: "done" },
-  { id: "3", name: "Create wireframes", column: "in-progress" },
-  { id: "4", name: "Design system setup", column: "in-progress" },
-  { id: "5", name: "Build component library", column: "todo" },
-  { id: "6", name: "Implement authentication", column: "todo" },
-  { id: "7", name: "API integration", column: "todo" },
-  { id: "8", name: "Write documentation", column: "backlog" },
-  { id: "9", name: "Set up CI/CD", column: "backlog" },
-  { id: "10", name: "Performance testing", column: "backlog" },
-]
-
-export function KanbanDemo() {
-  const [mounted, setMounted] = useState(false)
-  const [data, setData] = useState(initialDemoData)
-
-  // Prevent SSR to avoid dnd-kit hydration mismatch
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  if (!mounted) {
-    return <div className="h-screen w-screen bg-muted/50 animate-pulse" />
-  }
-
-  return (
-    <div className="h-screen w-screen p-4">
-      <KanbanProvider columns={demoColumns} data={data} onDataChange={setData} className="h-full">
-        {column => (
-          <KanbanBoard id={column.id} key={column.id}>
-            <KanbanHeader>{column.name}</KanbanHeader>
-            <KanbanCards id={column.id}>
-              {item => <KanbanCard key={item.id} {...item} />}
-            </KanbanCards>
-          </KanbanBoard>
-        )}
-      </KanbanProvider>
-    </div>
   )
 }

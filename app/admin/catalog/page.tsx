@@ -44,7 +44,7 @@ interface CatalogItem {
     imageBgClass?: string;
     limits?: Record<string, number>;
     sizeLimits?: Record<string, Record<string, number>>;
-    [key: string]: any;
+    [key: string]: unknown;
 }
 
 function slugify(text: string) {
