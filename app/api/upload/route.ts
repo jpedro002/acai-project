@@ -1,6 +1,24 @@
 import { NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
 import { S3Client, PutObjectCommand, HeadBucketCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { adminAuth, adminDb } from '@/lib/firebase/admin';
+import { ADMIN_SESSION_COOKIE_NAME } from '@/lib/auth/session';
+
+// Only admins may mint presigned upload URLs for the catalog bucket.
+async function verifyAdmin() {
+  const cookieStore = await cookies();
+  const sessionCookie = cookieStore.get(ADMIN_SESSION_COOKIE_NAME)?.value;
+  if (!sessionCookie) throw new Error('Unauthorized');
+
+  const decoded = await adminAuth.verifySessionCookie(sessionCookie, true);
+  const userDoc = await adminDb.collection('users').doc(decoded.uid).get();
+  const role = userDoc.data()?.role;
+  if (role !== 'admin' && decoded.admin !== true) {
+    throw new Error('Unauthorized');
+  }
+  return decoded;
+}
 
 const getR2Config = () => {
   const accountId = (process.env.R2_ACCOUNT_ID ?? '').trim();
@@ -14,6 +32,12 @@ const getR2Config = () => {
 
 export async function POST(request: Request) {
   try {
+    try {
+      await verifyAdmin();
+    } catch {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const { accountId, accessKeyId, secretAccessKey, bucketName, publicUrl: publicBaseUrl } = getR2Config();
 
     if (!accountId || !accessKeyId || !secretAccessKey || !bucketName || !publicBaseUrl) {
