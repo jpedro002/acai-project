@@ -1,14 +1,6 @@
 "use client";
-
-import { useState } from "react";
-
-interface BoostItem {
-    id: string;
-    name: string;
-    price: number;
-    image: string;
-    alt: string;
-}
+import { useCatalog } from "@/app/hooks/useCatalog";
+import builderData from "@/app/data/builder-data.json";
 
 interface BoostStepProps {
     boostItems: Record<string, number>;
@@ -18,35 +10,11 @@ interface BoostStepProps {
     onNext: () => void;
     onBack: () => void;
 }
-
-const items: BoostItem[] = [
-    {
-        id: "extra-nutella",
-        name: "Extra Nutella",
-        price: 3.00,
-        image: "https://lh3.googleusercontent.com/aida-public/AB6AXuAybnoISH29HMwq1H4_hFI7ECBM5qSD1LEOWKOwihHCjrIGju2J6htiZDy3nCJR6bNPfOE6FVlFF-9uXCpiegG6OjdCP3rPmF2fXAdYjLBoEs6uBZHTqws7VsFUeOoFV3PYLVuiaJ3gyvky50vYRMirxRsKurH4pAM8Yq4BF4R2OyNidj3WiUgY81I-TUImuJ6uglDaMmhDuHsAz6nIqWfKqiY--fFoWG3ulTHPfqBJSg1_AHpLvELYvKV2y-A3pqLuzr-ZidhkQ_nN",
-        alt: "close up view of creamy rich chocolate hazelnut spread with a spoon"
-    },
-    {
-        id: "mms",
-        name: "M&Ms",
-        price: 2.50,
-        image: "https://lh3.googleusercontent.com/aida-public/AB6AXuDvpK5-dou9F74QgvEP3RqUYzp1Ed7xQEp-yS5wpuPtt-3Z-ikHeXoyDS9zdmqohSJmhfNgVPZm_POg-BKSn7JhjllMf6PUEQJUU9xH7ClfRfSVKIVFRw16Qn-LXWc1HRXxPy5xFrGyRuiHYk3DtHgPJccwglKScDJ2ha56qWJNp_x-DYtnZ4z_WjZvLdId8HqQbq1g-Ngtdr6F-y6osryKQqAIWCBNDdpHiOFqaPD4YCbLQtUwXSqjacukchL5aBYC9yr6dJiJUd1u",
-        alt: "pile of colorful candy coated chocolate buttons spilling out"
-    },
-    {
-        id: "oreo",
-        name: "Oreo",
-        price: 2.00,
-        image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBOJkqzx1Zk5eWMz0VXtVKdAt1nZNo7fr15WsqhleNF50VYqvb6CU3QadDc3sVSTgQp28SPSHbJqRNvxppOXANDCVzYZR5WRS-9NDtv82QgGxl-_3TGmDqDc--jtmCNMAyTImaoKcHaA8vVf_CEVIpFACpErMjIBW5W5MdfZ5zziO_OCL6ODlfNqeEVzwdPeMZhTiZMyX9Ek2SztwtMM3yKPgmK5KNN0eQTTMencFy7RyyDFUKXzs9z3NfwA9mgYGLri2XiTi_iouMT",
-        alt: "stack of chocolate sandwich cookies with white cream filling"
-    }
-];
-
 export default function BoostStep({ boostItems, setBoostItems, observations, setObservations, onNext, onBack }: BoostStepProps) {
     const handleIncrement = (id: string) => {
         setBoostItems({ ...boostItems, [id]: (boostItems[id] || 0) + 1 });
     };
+    const { items } = useCatalog("boost", builderData.builder.boosts);
 
     const handleDecrement = (id: string) => {
         if (boostItems[id] > 0) {
@@ -65,8 +33,8 @@ export default function BoostStep({ boostItems, setBoostItems, observations, set
                 {items.map((item) => (
                     <div key={item.id} className="flex items-center gap-4 bg-surface-container-lowest p-4 rounded-xl shadow-[0_32px_48px_rgba(26,28,28,0.04)]">
                         <div className="flex items-center gap-4 flex-1">
-                            <div className="bg-center bg-no-repeat aspect-square bg-cover rounded-lg size-16" 
-                                style={{ backgroundImage: `url("${item.image}")` }} 
+                            <div className="bg-center bg-no-repeat aspect-square bg-cover rounded-lg size-16"
+                                style={{ backgroundImage: `url("${item.image}")` }}
                                 aria-label={item.alt}>
                             </div>
                             <div className="flex flex-col justify-center">
@@ -87,7 +55,7 @@ export default function BoostStep({ boostItems, setBoostItems, observations, set
 
             <div className="mt-8">
                 <label className="block text-on-surface font-headline font-bold mb-3 text-lg">Observações do Pedido</label>
-                <textarea 
+                <textarea
                     value={observations}
                     onChange={(e) => setObservations(e.target.value)}
                     placeholder="Ex: Tirar o morango, colocar extra leite condensado..."
@@ -96,14 +64,14 @@ export default function BoostStep({ boostItems, setBoostItems, observations, set
             </div>
 
             <div className="fixed bottom-0 left-0 right-0 max-w-5xl mx-auto bg-surface/80 backdrop-blur-[20px] pb-8 pt-4 px-6 shadow-[0_-8px_32px_rgba(26,28,28,0.04)] z-50 flex gap-4 md:gap-8 justify-between items-center">
-                 <button 
+                <button
                     onClick={onBack}
                     className="whitespace-nowrap bg-transparent text-tertiary px-6 py-4 rounded-full font-headline font-bold text-sm tracking-wide uppercase hover:bg-surface-container transition-colors duration-200"
                 >
                     Voltar
                 </button>
                 <div className="flex flex-col w-full">
-                    <button 
+                    <button
                         onClick={onNext}
                         className="w-full bg-[#FFB800] text-[#3D0B37] rounded-full py-4 px-6 font-headline font-bold text-sm tracking-wide uppercase hover:scale-[1.02] hover:shadow-[0_8px_32px_rgba(255,184,0,0.4)] transition-all"
                     >

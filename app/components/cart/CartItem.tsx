@@ -1,9 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import Image from 'next/image';
 
 interface CartItemProps {
-    id: string;
     name: string;
     flavor: string;
     price: number;
@@ -14,7 +13,6 @@ interface CartItemProps {
 }
 
 export default function CartItem({
-    id,
     name,
     flavor,
     price,
@@ -36,10 +34,13 @@ export default function CartItem({
     return (
         <div className="bg-surface-container-lowest rounded-2xl p-3 sm:p-4 flex gap-3 sm:gap-6 items-center shadow-[0_8px_32px_rgba(61,11,55,0.04)] hover:scale-[1.02] transition-transform duration-300">
             <div className="w-20 h-20 sm:w-28 sm:h-28 flex-shrink-0 rounded-2xl overflow-hidden bg-surface-container">
-                <img
+                <Image
                     alt={name}
                     className="w-full h-full object-cover"
                     src={image}
+                    width={112}
+                    height={112}
+                    unoptimized
                 />
             </div>
             <div className="flex-grow min-w-0">

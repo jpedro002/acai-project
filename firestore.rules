@@ -1,0 +1,66 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuthenticated()
+             && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+             && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isSafeUserCreate(userId) {
+      return isOwner(userId)
+             && request.resource.data.uid == userId
+             && (!('role' in request.resource.data) || request.resource.data.role == 'customer');
+    }
+
+    function isSafeUserUpdate(userId) {
+      return isOwner(userId)
+             && request.resource.data.uid == userId
+             && (!('role' in request.resource.data)
+                 || ('role' in resource.data && request.resource.data.role == resource.data.role));
+    }
+
+    function isOwnOrderCreate() {
+      return isAuthenticated()
+             && request.resource.data.userId == request.auth.uid
+             && ('customer' in request.resource.data)
+             && request.resource.data.customer.uid == request.auth.uid;
+    }
+
+    function isOwnOrderRead() {
+      return isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+
+    match /catalog/{document=**} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /configs/{document=**} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isSafeUserCreate(userId) || isAdmin();
+      allow update: if isSafeUserUpdate(userId) || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    match /orders/{orderId} {
+      allow create: if isOwnOrderCreate() || isAdmin();
+      allow read: if isOwnOrderRead() || isAdmin();
+      allow update, delete: if isAdmin();
+    }
+  }
+}

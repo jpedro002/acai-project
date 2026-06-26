@@ -1,54 +1,24 @@
 "use client";
 
+import { useState } from "react";
+import { useCatalog } from "@/app/hooks/useCatalog";
+import builderData from "@/app/data/builder-data.json";
 import Image from "next/image";
+import LimitReachedBanner from "./LimitReachedBanner";
 
 interface FruitsStepProps {
     selectedFruits: string[];
     setSelectedFruits: (fruits: string[]) => void;
+    maxFruits: number;
     onNext: () => void;
     onBack: () => void;
 }
 
-export default function FruitsStep({ selectedFruits, setSelectedFruits, onNext, onBack }: FruitsStepProps) {
-    const maxFruits = 3;
+export default function FruitsStep({ selectedFruits, setSelectedFruits, maxFruits, onNext, onBack }: FruitsStepProps) {
+    const { items: fruits } = useCatalog("fruit", builderData.builder.fruits);
+    const [shakeId, setShakeId] = useState<string | null>(null);
 
-    const fruits = [
-        {
-            id: "morango",
-            title: "Morango",
-            description: "Docinho, suculento e colhido no ponto perfeito para o seu bowl.",
-            imageUrl: "https://lh3.googleusercontent.com/aida-public/AB6AXuDEdX7EyJW0o3Pl0TRjXpI0BMv7V9-6BPgSSkQpS0awLEivedQ6Wgs8RR6oUVAi44vWyAerWWGx1gpGpXQVTYiDRSX0PcslTAkFYlOnHg1BKtJ3KOPhH2QaKduFVV3Qb4Rv119enP_Fbuv2RKThj4ufp_D9OLV7F4EtB4eOyRC26M7kxn8ZRaVDtMWMQY8jRYJ9XTpEnHP71KZy1DI4swAfGuRstfI3sSBUVf-wyaAUiVKROB_i_elusYmJhiRaOXqLdXeT47x5OEkw",
-            imageAlt: "top-down macro shot of vibrant red sliced strawberries on a clean white surface with natural morning light"
-        },
-        {
-            id: "banana",
-            title: "Banana",
-            description: "A cremosidade clássica que todo açaí de respeito exige.",
-            imageUrl: "https://lh3.googleusercontent.com/aida-public/AB6AXuAeQBDyBGGrkJebCu7m15L1yCEvwJW2PpTX1XPcyme6i4rkTnd0r6-uGqu5ow4irS-_6CvHyA9VyET1DND5UrGNzxg9NBLm__u3OAwYVJEzU_tfIvISVe_Okekk0iz_v_yVruuNvJTXBlnD8uPABW4t2PcNd_6EixAjbBoIA8V6P9ntyIL-WZV_XMePQXkSglcASB1IcUFTOzHJq_wBk4P44lXylXWFeGFWcpFOevXVmw0VUczhvovKpXV55tFhNn0BXHIyNiaW0Ce3",
-            imageAlt: "close-up of perfectly ripe yellow banana slices arranged symmetrically on a minimalist dark background"
-        },
-        {
-            id: "kiwi",
-            title: "Kiwi",
-            description: "Um toque cítrico e refrescante para equilibrar o sabor.",
-            imageUrl: "https://lh3.googleusercontent.com/aida-public/AB6AXuD5gJTZdcKB3h6jHsYKt0e1KVDvR36155coac_rLoYl1mkyU4YGRnC7K6sySEEubcB_0d0LQ0adXf9D3cgBVQj_wnq-KJ_K8PudQATvxq_C8QidQaA80PXmDPSwx2W9bbu7vNv7x2BxWGBMiyIECCfBDooPwWXwsS0e2pEo4bb6oTrFVJuGk5dFDYIsSQnMMQBo0vum-2mnzCSYTUTRmAacveVrn-UKb5I4WY2cgpgx62ARmqkF-two5FOG7wcF8qdWzUZPUxJL0THs",
-            imageAlt: "refreshing top-down view of vibrant green kiwi slices showing intricate seed patterns and glistening texture"
-        },
-        {
-            id: "manga",
-            title: "Manga",
-            description: "Explosão tropical de doçura e textura aveludada.",
-            imageUrl: "https://lh3.googleusercontent.com/aida-public/AB6AXuAtXCdbZIo3Y_HkD5qkRm7ykpPhKWxORN0N_Vrc3I1hADpVrPzXZgLm3KjmdCz0UHs6iSkonoHMEO5eZe0Utugxyu-LNDzWSgtTTPdO4_N8UQr83khv0ZAW2AZFEjke0NcEGbGuJTKOCWdKt7MRaXmvi8pn7Sj-80RHYri3tlwgLT4AWJr7U8z45ev-kpAplbiBqm4qewIB35wNUweFAfSnloyJYkMzJ7nVLFMZnhPLY-2_sKRRZCrJeYHwwcgrIpJ1YY2-cJ5ktZn0",
-            imageAlt: "vibrant orange mango cubes in a high-key professional food photography style with soft shadows"
-        },
-        {
-            id: "abacaxi",
-            title: "Abacaxi",
-            description: "Acidez vibrante para quem ama um contraste intenso.",
-            imageUrl: "https://lh3.googleusercontent.com/aida-public/AB6AXuDHFy1yRRIYQ-IeZy2NdcCgazbpmsb-UcNpr8A5XFgrmuIicj-I5LFBM9ZDpwyICJBzD2Sejl6W5sfYGUf2xsy9Ye58Fq3TTRxmtFge5Acdwco4ScK3qbDyYUeoHDIIKodhjljW8qJmjKbgH0bM0MhNywLRg1BodTtF6mLphJfABG_pwyfpNHdD9f1XpeGmdJ0AvFvUNobDHcMAtAXv01umSG_cSD3WEh7vQEailZFb8I_McjU3Hu1K-fJh8iSVXX9QymXLcP_WX3g5",
-            imageAlt: "fresh golden pineapple chunks with water droplets on a neutral surface, bright tropical aesthetic"
-        }
-    ];
+    const isAtLimit = selectedFruits.length >= maxFruits;
 
     const toggleFruit = (fruitId: string) => {
         if (selectedFruits.includes(fruitId)) {
@@ -60,27 +30,49 @@ export default function FruitsStep({ selectedFruits, setSelectedFruits, onNext, 
         }
     };
 
+    const handleCardClick = (fruitId: string) => {
+        if (isAtLimit && !selectedFruits.includes(fruitId)) {
+            setShakeId(fruitId);
+            setTimeout(() => setShakeId(null), 500);
+            return;
+        }
+        toggleFruit(fruitId);
+    };
+
     return (
         <div className="w-full">
             {/* Title Section */}
-            <div className="mt-8 mb-10">
+            <div className="mt-8 mb-6">
                 <div className="flex justify-between items-end mb-4">
                     <div>
                         <h2 className="text-3xl font-black text-tertiary tracking-tight">Escolha suas Frutas</h2>
                     </div>
-                    <div className="text-on-surface-variant font-body text-sm font-medium">Até {maxFruits} opções ({selectedFruits.length}/{maxFruits})</div>
+                    <div className={`font-body text-sm font-bold px-3 py-1.5 rounded-full transition-colors duration-300 ${isAtLimit ? 'bg-[#FFB800]/20 text-[#7C5800]' : 'text-on-surface-variant'}`}>
+                        {selectedFruits.length}/{maxFruits}
+                    </div>
                 </div>
             </div>
+
+            {/* Limit Reached Banner */}
+            <LimitReachedBanner current={selectedFruits.length} max={maxFruits} label="frutas" />
 
             {/* Options List */}
             <div className="space-y-6 mb-12">
                 {fruits.map((fruit) => {
                     const isSelected = selectedFruits.includes(fruit.id);
+                    const isDisabled = isAtLimit && !isSelected;
+                    const isShaking = shakeId === fruit.id;
+
                     return (
                         <div
                             key={fruit.id}
-                            onClick={() => toggleFruit(fruit.id)}
-                            className={`relative group cursor-pointer active:scale-95 transition-transform duration-200 editorial-shadow rounded-xl overflow-hidden bg-surface-container-lowest ${isSelected ? 'ring-2 ring-inverse-primary' : ''}`}
+                            onClick={() => handleCardClick(fruit.id)}
+                            className={`
+                                relative group cursor-pointer active:scale-95 transition-transform duration-200 editorial-shadow rounded-xl overflow-hidden bg-surface-container-lowest
+                                ${isSelected ? 'ring-2 ring-inverse-primary' : ''}
+                                ${isDisabled ? 'opacity-40 grayscale-[0.3] cursor-not-allowed' : ''}
+                                ${isShaking ? 'animate-shake' : ''}
+                            `}
                         >
                             <div className="aspect-[16/7] w-full overflow-hidden relative">
                                 <Image

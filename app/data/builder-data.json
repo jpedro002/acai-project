@@ -1,0 +1,452 @@
+{
+  "builder": {
+    "limits": {
+      "creams": 3,
+      "fruits": 3,
+      "toppings": 1,
+      "mix": 2
+    },
+    "sizes": [
+      {
+        "id": "300",
+        "label": "300ml",
+        "limits": {
+          "creams": 3,
+          "fruits": 3,
+          "toppings": 1,
+          "mix": 2
+        },
+        "type": "size"
+      },
+      {
+        "id": "500",
+        "label": "500ml",
+        "limits": {
+          "creams": 3,
+          "fruits": 3,
+          "toppings": 1,
+          "mix": 2
+        },
+        "type": "size"
+      },
+      {
+        "id": "700",
+        "label": "700ml",
+        "limits": {
+          "creams": 3,
+          "fruits": 3,
+          "toppings": 1,
+          "mix": 2
+        },
+        "type": "size"
+      },
+      {
+        "id": "1000",
+        "label": "1 litro",
+        "limits": {
+          "creams": 3,
+          "fruits": 3,
+          "toppings": 1,
+          "mix": 2
+        },
+        "type": "size"
+      }
+    ],
+    "bases": [
+      {
+        "id": "especial",
+        "title": "Açaí Especial",
+        "description": "A receita original do Pará. Intenso, cremoso e pura energia.",
+        "prices": {
+          "300": 15.9,
+          "500": 22.9,
+          "700": 28.9,
+          "1000": 38.9
+        },
+        "imageUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuCNEP2OH8aL6R3rOfF3krYmZL0v0tUXwChoJmA7tM5rAuAALnLHfQfBpCjH8GPJGkZds6GNgn3QGo3h-R8IiTGjEeqz3X9y1pUmpclWtrjbDzZZH8SlIZ09SCXcdfuTFzSwGDOxpIGltwNYijwIN_2BFHA0egWbM6FLPX-YjYFVbcYkJu6nZMTqCogGzogIVh5syCGFJhXlDDI-bPKW7cL-4OQL7jvTlJloG5oLTP5uc5VGHXNjI81s44Y93Fu7NC6A_gyuEOMYp2RQ",
+        "imageAlt": "rich deep purple acai berry cream texture in a bowl",
+        "badge": "CLÁSSICO",
+        "imageBgClass": "bg-tertiary-container",
+        "type": "base"
+      },
+      {
+        "id": "fit",
+        "title": "Açaí Fit",
+        "description": "Todo o sabor e benefícios do açaí, sem açúcar (adoçado com stevia).",
+        "prices": {
+          "300": 18.9,
+          "500": 25.9,
+          "700": 31.9,
+          "1000": 42.9
+        },
+        "imageUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuDNTqFCC_OasS6uxCGXPPVX8u7e-AiKEcTUtTAtgN5w1D5ORk4EFnCHe4Q5gR4sp_TKEfikhBiXyiGOTv0V8wpeq4ivxjzOpGSx4XYDyZxigvC-oOgwvty4xujLVp0tx-ui0MuhzLJ0_hMFdySpI63JIMUgg2YjXvOBZiQ0w6wnot5ujU2_-KveAXIwXmH9bgZ_x1wi9-vtTtgO4qc4fGHdjeOPNvGUvNmhlgP42zm5lUjpyFuiW-8sDN_Lm110lEw0d0TIfcZI0NOC",
+        "imageAlt": "vibrant deep purple acai blend in a glass bowl",
+        "badge": "ZERO AÇÚCAR",
+        "imageBgClass": "bg-surface-container-high",
+        "type": "base"
+      },
+      {
+        "id": "sem-acai",
+        "title": "Sem Açaí",
+        "description": "Explore outras opções incríveis de cremes como sua base.",
+        "prices": {
+          "300": 16.9,
+          "500": 23.9,
+          "700": 29.9,
+          "1000": 39.9
+        },
+        "imageUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuAJfyZ9tNfdFW8d3llc_kOFdyck2JzFJvCbECWRGIPEHeFMWgziAX8rYvinPSLcoCnhBKrjYSJ20F2G7_t4kHD-D6RO0FyET6m85onROFc8v2O2MAmAqzpJaOErbsBK4uQorVPb6WZt63ynE4fMIyx_5CVm60DiIQogsr7RsRmG8XNrHKoZzUXYD5i2ukbsbw0cRWUSw5CLrwbXZXSqvFkzNf2XOA1XaoGP-mD9c3qoCV6Y4ZnOBT-n29bP4dojJvUOlKAGmmfgAG7n",
+        "imageAlt": "pale yellow creamy cupuacu fruit pulp texture",
+        "badge": "DIFERENCIADO",
+        "imageBgClass": "bg-secondary-container",
+        "type": "base"
+      }
+    ],
+    "creams": [
+      {
+        "id": "cupuacu",
+        "title": "CREME CUPUAÇU",
+        "description": "Tropical e refrescante",
+        "imageUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuCW4c2Mhn6b7zmVckeQViBkqnPqJJrW8a51ZI35jfNywMJ3oTJQ36Y-RQHezLHSYIMs_M8NR8tgAb4Jxk6fB4EMawjApJuhXSvoTq3wmR5H6AOk98LcjROcNFfdW1Ypv6s7EB5UZt5x7ShMvz2-EiOkWHMCIlvAivrmkuU1FzmQqioEsZDGt1MjnDl1ogb4_7N2cHoDGMB-tm6LIcaZukdFP15MK_EjhpXu7puvVf4A67iyLBwb-UpMzxFi4VM9DD5o8psPamMMYnTJ",
+        "imageAlt": "thick velvety white cupuacu cream in a glass bowl",
+        "isFeatured": false,
+        "type": "cream"
+      },
+      {
+        "id": "ninho",
+        "title": "CREME DE NINHO",
+        "description": "O clássico que amamos",
+        "imageUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuAnUB5fX7EjxxdbCT66OYbUZ0I0C221A0yf8X-qOE3tbkaUWp2dDa6sr-q87i4iLr8-Bb01uWcxw8OgLiImyJKr1Gm5oLa0OwhZPUPOA-h6fquIjeAgZahC_sdt1DPwd1uojMxJzNibF3J1HongMx_mfAAMRxcyE6CBK_HSGGkd0250W9uWiRjQHh3uulc3hnYjgW4HhnZSSfARrT46SAIYNzOEJgwDndqcfPJiZsqOOfMRuLe0eAFWs4eP-88Bd51ZtdEtoz7B9KUn",
+        "imageAlt": "rich creamy yellowish milk powder spread",
+        "isFeatured": false,
+        "type": "cream"
+      },
+      {
+        "id": "maracuja",
+        "title": "CREME MARACUJÁ",
+        "description": "Azedinho equilibrado",
+        "imageUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuD8O5MkrAZPIklG65Q03PwSaPlRH86dHlBgATYPLgoQshoTx9xori20Zc0_NVcxxyY1SxY4-WR8yKGcTa1PFFVVnTKHjbYfqrzVzLR5L6mGn62_cT6TMNiZjDVuEWjKxJhFy67PsMhA_DrPhcgCl6DrTdo-Lyyg8lU-KShz0E8t00uGvX-fp2EQpb_ayB-HkXgn6gvY8B1St_OFQ_A482g6Kni_3jNtmAAWZlgTGtbewoI7RJZU7nOViZOaLf2DURX13ZMdEM_1d7cR",
+        "imageAlt": "vibrant yellow passion fruit mousse",
+        "isFeatured": false,
+        "type": "cream"
+      },
+      {
+        "id": "morango",
+        "title": "CREME MORANGO",
+        "description": "Frescor da fruta",
+        "imageUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuClqyB5mwWbjtiXXGAZwoWILBZrPpWHovgDHRJQ7QKL0zmSRlURtuksZpC9trylg0GfZWTK7SYUz02BUY-ZU3hIJha3YUcTWd6JR3DRI1kYjPiAf0JFbJhxqmVXL8aDn48e74R7R0rKKnIKr2Cj4KT5epdIcCx77JqWCtmjLLH5EI4SAfkXPgIqixAT-MoLP7KJXa-SG4nM-eKcPZJmK2rgBPvpmDfwF9bY9puAJIIli2eMbneOGVLRZiXTFQ_WPm9WblALzMAllNAT",
+        "imageAlt": "soft pink strawberry cream with visible fruit chunks",
+        "isFeatured": false,
+        "type": "cream"
+      },
+      {
+        "id": "oreo",
+        "title": "CREME OREO",
+        "description": "Crocante e cremoso",
+        "imageUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuAqm9SNniKHXQt_qzCpekrqHmUm_8oToB2Hf0ikflJnqqJWy8-Zgt8U2UxpsBI0VexHQyFRV2Tx0wrP5PfeJYI1TrKDgFCb9NMGUpiK-rqSg6vbYGI6_sn93M4paPlMTFafOUopyLvxPJ_CdTrvuHFrZP_kuRciNtooj1rQtQb0iH8gkcMCKGLmRZgyPkfcD6toDbVduF8YI5CuwcHIzf471kFK84mJlhNbyPjw8_eRJcB8eqPveEKvMJRUx2ZaobcCeLtW_xNlb9bl",
+        "imageAlt": "white vanilla cream mixed with dark chocolate cookie crumbles",
+        "isFeatured": false,
+        "type": "cream"
+      },
+      {
+        "id": "pacoquita",
+        "title": "CREME PAÇOQUITA",
+        "description": "Sabor intenso de amendoim",
+        "imageUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuB6TQM3_jx1-DRLAbBR0hlqX_XXir3OSiG-pWdcVbiHoQ0_MMQpbjbB-IlKCa-oNXWhvfru80anO0ZUcDCI0n2iA1NbvyR7IFPPEVxMUsbiYz0TNINIFYb_dRYSodZ7y_T3whvynIoorbS35-Mu7u4UOSzM6pLyrdS_gwItGOio2K_lrNWeUiDOxd-n5hWQ957r-rexSBsaOG3IPw4OkW6mrC8MAzJuPCPNu-GxbeLIacWsgPO8bQvUcuGHmTCvKtpciybJljnHXD4e",
+        "imageAlt": "warm beige peanut cream with visible ground nuts",
+        "isFeatured": false,
+        "type": "cream"
+      },
+      {
+        "id": "tapioca",
+        "title": "TAPIOCA CREMOSA",
+        "description": "Textura única e sabor autêntico da Amazônia",
+        "imageUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuAlLjmk6LYbgppJcCnXMb-aYlNLlQYWK1wCsbeO4-3vp7hHxwRXS3C4iP9vkjDKOgvSSGC_jCoSTqZGXGZfQc6JusZsyw3JkMl7GvQB7KYyciiNXkzMtvrkS2DVWbnrEXns7IfS4b1nVLASgqrBsUvzB1uylp-GMhwJWIPA5fe8mjvqA3O5iF-xfUtFn3E8si4ljsaB_T27huXJauyRuzyeQc69NzrrclOInfJJYesOJawfb0Q-VOoJEOLkBYq9IpbMYme3xqLoup47",
+        "imageAlt": "traditional brazilian tapioca cream with visible small translucent pearls",
+        "isFeatured": true,
+        "type": "cream"
+      }
+    ],
+    "fruits": [
+      {
+        "id": "morango",
+        "title": "Morango",
+        "description": "Docinho, suculento e colhido no ponto perfeito para o seu bowl.",
+        "imageUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuDEdX7EyJW0o3Pl0TRjXpI0BMv7V9-6BPgSSkQpS0awLEivedQ6Wgs8RR6oUVAi44vWyAerWWGx1gpGpXQVTYiDRSX0PcslTAkFYlOnHg1BKtJ3KOPhH2QaKduFVV3Qb4Rv119enP_Fbuv2RKThj4ufp_D9OLV7F4EtB4eOyRC26M7kxn8ZRaVDtMWMQY8jRYJ9XTpEnHP71KZy1DI4swAfGuRstfI3sSBUVf-wyaAUiVKROB_i_elusYmJhiRaOXqLdXeT47x5OEkw",
+        "imageAlt": "top-down macro shot of vibrant red sliced strawberries on a clean white surface with natural morning light",
+        "type": "fruit"
+      },
+      {
+        "id": "banana",
+        "title": "Banana",
+        "description": "A cremosidade clássica que todo açaí de respeito exige.",
+        "imageUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuAeQBDyBGGrkJebCu7m15L1yCEvwJW2PpTX1XPcyme6i4rkTnd0r6-uGqu5ow4irS-_6CvHyA9VyET1DND5UrGNzxg9NBLm__u3OAwYVJEzU_tfIvISVe_Okekk0iz_v_yVruuNvJTXBlnD8uPABW4t2PcNd_6EixAjbBoIA8V6P9ntyIL-WZV_XMePQXkSglcASB1IcUFTOzHJq_wBk4P44lXylXWFeGFWcpFOevXVmw0VUczhvovKpXV55tFhNn0BXHIyNiaW0Ce3",
+        "imageAlt": "close-up of perfectly ripe yellow banana slices arranged symmetrically on a minimalist dark background",
+        "type": "fruit"
+      },
+      {
+        "id": "kiwi",
+        "title": "Kiwi",
+        "description": "Um toque cítrico e refrescante para equilibrar o sabor.",
+        "imageUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuD5gJTZdcKB3h6jHsYKt0e1KVDvR36155coac_rLoYl1mkyU4YGRnC7K6sySEEubcB_0d0LQ0adXf9D3cgBVQj_wnq-KJ_K8PudQATvxq_C8QidQaA80PXmDPSwx2W9bbu7vNv7x2BxWGBMiyIECCfBDooPwWXwsS0e2pEo4bb6oTrFVJuGk5dFDYIsSQnMMQBo0vum-2mnzCSYTUTRmAacveVrn-UKb5I4WY2cgpgx62ARmqkF-two5FOG7wcF8qdWzUZPUxJL0THs",
+        "imageAlt": "refreshing top-down view of vibrant green kiwi slices showing intricate seed patterns and glistening texture",
+        "type": "fruit"
+      },
+      {
+        "id": "manga",
+        "title": "Manga",
+        "description": "Explosão tropical de doçura e textura aveludada.",
+        "imageUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuAtXCdbZIo3Y_HkD5qkRm7ykpPhKWxORN0N_Vrc3I1hADpVrPzXZgLm3KjmdCz0UHs6iSkonoHMEO5eZe0Utugxyu-LNDzWSgtTTPdO4_N8UQr83khv0ZAW2AZFEjke0NcEGbGuJTKOCWdKt7MRaXmvi8pn7Sj-80RHYri3tlwgLT4AWJr7U8z45ev-kpAplbiBqm4qewIB35wNUweFAfSnloyJYkMzJ7nVLFMZnhPLY-2_sKRRZCrJeYHwwcgrIpJ1YY2-cJ5ktZn0",
+        "imageAlt": "vibrant orange mango cubes in a high-key professional food photography style with soft shadows",
+        "type": "fruit"
+      },
+      {
+        "id": "abacaxi",
+        "title": "Abacaxi",
+        "description": "Acidez vibrante para quem ama um contraste intenso.",
+        "imageUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuDHFy1yRRIYQ-IeZy2NdcCgazbpmsb-UcNpr8A5XFgrmuIicj-I5LFBM9ZDpwyICJBzD2Sejl6W5sfYGUf2xsy9Ye58Fq3TTRxmtFge5Acdwco4ScK3qbDyYUeoHDIIKodhjljW8qJmjKbgH0bM0MhNywLRg1BodTtF6mLphJfABG_pwyfpNHdD9f1XpeGmdJ0AvFvUNobDHcMAtAXv01umSG_cSD3WEh7vQEailZFb8I_McjU3Hu1K-fJh8iSVXX9QymXLcP_WX3g5",
+        "imageAlt": "fresh golden pineapple chunks with water droplets on a neutral surface, bright tropical aesthetic",
+        "type": "fruit"
+      }
+    ],
+    "toppings": [
+      {
+        "id": "caramelo",
+        "title": "COB. CARAMELO",
+        "description": "Doçura envolvente com um toque amanteigado.",
+        "imageUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuByswgQPb82McXAoURSfpGwmCLI5RtEJDiyyHRhti6KKLgzj0j6uCmiZxVtX-teNNO-fTFczU8W7WSGgCg8aFm6j-YoDUecT6jShvcN-GHr_955yqydut9GkOZbrqZcCGC-K_5i8ds70qA57zrBmid3bHa0BRmsqja4cr8IAwIo2FLXoDxmyNZhzyCKCkBTIgiyQyjxvBjcaViE2Wby5E9di1jChoQ91rb3GEY8AkULIxMfO_664vKYEr6x-htAU3KwzYApf8Q4z3hm",
+        "imageAlt": "Top-down macro shot of thick golden caramel sauce drizzled in artistic swirls on a clean cream surface",
+        "type": "topping"
+      },
+      {
+        "id": "chocolate",
+        "title": "COB. CHOCOLATE",
+        "description": "O clássico irresistível feito com cacau selecionado.",
+        "imageUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuCezopo02yEcZypT0D_2QKQgUAvUcEuVJfjEtomwXI6KLKEPvMFHyRA9L96LppeitB7zcB6f4xwUe75WGujYfYlTivT6xojWc4Fx4fQp854mwrDyUHmA8Z3Icsxk5VLpSeLbh8swj6CFWpgNWMDWlcNLGVY-PkwlX6Frbls9QyzEj1KWW1GGjO6r4i1FvLgI1ZHzxf0vbfNeYK23JKe1ttFDeS1ZLWubuUIh-a-CIkO4eBrkne5uyG4GBi5qMi_OWTqI1PsHCFFm-qj",
+        "imageAlt": "Overhead view of rich glossy dark chocolate ganache spreading smooth across a marble background",
+        "type": "topping"
+      },
+      {
+        "id": "kiwi",
+        "title": "COB. KIWI",
+        "description": "Toque cítrico e refrescante para seu mix.",
+        "imageUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuD5gJTZdcKB3h6jHsYKt0e1KVDvR36155coac_rLoYl1mkyU4YGRnC7K6sySEEubcB_0d0LQ0adXf9D3cgBVQj_wnq-KJ_K8PudQATvxq_C8QidQaA80PXmDPSwx2W9bbu7vNv7x2BxWGBMiyIECCfBDooPwWXwsS0e2pEo4bb6oTrFVJuGk5dFDYIsSQnMMQBo0vum-2mnzCSYTUTRmAacveVrn-UKb5I4WY2cgpgx62ARmqkF-two5FOG7wcF8qdWzUZPUxJL0THs",
+        "imageAlt": "Vibrant green kiwi fruit syrup with visible seeds in a top-down view reflecting freshness",
+        "type": "topping"
+      },
+      {
+        "id": "leite-condensado",
+        "title": "COB. LEITE CONDENSADO",
+        "description": "A cremosidade doce que é paixão nacional.",
+        "imageUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuAnUB5fX7EjxxdbCT66OYbUZ0I0C221A0yf8X-qOE3tbkaUWp2dDa6sr-q87i4iLr8-Bb01uWcxw8OgLiImyJKr1Gm5oLa0OwhZPUPOA-h6fquIjeAgZahC_sdt1DPwd1uojMxJzNibF3J1HongMx_mfAAMRxcyE6CBK_HSGGkd0250W9uWiRjQHh3uulc3hnYjgW4HhnZSSfARrT46SAIYNzOEJgwDndqcfPJiZsqOOfMRuLe0eAFWs4eP-88Bd51ZtdEtoz7B9KUn",
+        "imageAlt": "Top-down shot of silky thick condensed milk being poured in a circular pattern on a light surface",
+        "type": "topping"
+      },
+      {
+        "id": "limao",
+        "title": "COB. LIMÃO",
+        "description": "Acidez vibrante e aroma cítrico marcante.",
+        "imageUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuD8O5MkrAZPIklG65Q03PwSaPlRH86dHlBgATYPLgoQshoTx9xori20Zc0_NVcxxyY1SxY4-WR8yKGcTa1PFFVVnTKHjbYfqrzVzLR5L6mGn62_cT6TMNiZjDVuEWjKxJhFy67PsMhA_DrPhcgCl6DrTdo-Lyyg8lU-KShz0E8t00uGvX-fp2EQpb_ayB-HkXgn6gvY8B1St_OFQ_A482g6Kni_3jNtmAAWZlgTGtbewoI7RJZU7nOViZOaLf2DURX13ZMdEM_1d7cR",
+        "imageAlt": "Zesty green lime syrup with fine zest particles top view under bright studio lighting",
+        "type": "topping"
+      },
+      {
+        "id": "morango",
+        "title": "COB. MORANGO",
+        "description": "Sabor intenso de frutas vermelhas frescas.",
+        "imageUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuDEdX7EyJW0o3Pl0TRjXpI0BMv7V9-6BPgSSkQpS0awLEivedQ6Wgs8RR6oUVAi44vWyAerWWGx1gpGpXQVTYiDRSX0PcslTAkFYlOnHg1BKtJ3KOPhH2QaKduFVV3Qb4Rv119enP_Fbuv2RKThj4ufp_D9OLV7F4EtB4eOyRC26M7kxn8ZRaVDtMWMQY8jRYJ9XTpEnHP71KZy1DI4swAfGuRstfI3sSBUVf-wyaAUiVKROB_i_elusYmJhiRaOXqLdXeT47x5OEkw",
+        "imageAlt": "Glossy red strawberry sauce with small fruit pieces top view for food photography",
+        "type": "topping"
+      }
+    ],
+    "mix": [
+      {
+        "id": "creme-cookies",
+        "title": "CREME DE COOKIES",
+        "type": "mix"
+      },
+      {
+        "id": "doce-leite",
+        "title": "DOCE DE LEITE",
+        "type": "mix"
+      },
+      {
+        "id": "finni-bananinha",
+        "title": "FINNI BANANINHA",
+        "type": "mix"
+      },
+      {
+        "id": "mix-amendoin",
+        "title": "MIX AMENDOIN",
+        "type": "mix"
+      },
+      {
+        "id": "mix-canudinho",
+        "title": "MIX CANUDINHO",
+        "type": "mix"
+      },
+      {
+        "id": "mix-castanha",
+        "title": "MIX CASTANHA",
+        "type": "mix"
+      },
+      {
+        "id": "mix-cereja",
+        "title": "MIX CEREJA",
+        "type": "mix"
+      },
+      {
+        "id": "mix-chocobol",
+        "title": "MIX CHOCOBOL",
+        "type": "mix"
+      },
+      {
+        "id": "mix-chocobol-bol-g",
+        "title": "MIX CHOCOBOL BOL G",
+        "type": "mix"
+      },
+      {
+        "id": "mix-chocopower",
+        "title": "MIX CHOCOPOWER PRETO E BRANCO",
+        "type": "mix"
+      },
+      {
+        "id": "mix-gotas-chocolate",
+        "title": "MIX GOTAS DE CHOCOLATE",
+        "type": "mix"
+      },
+      {
+        "id": "mix-granola",
+        "title": "MIX GRANOLA",
+        "type": "mix"
+      },
+      {
+        "id": "mix-granulado-chocolate",
+        "title": "MIX GRANULADO CHOCOLATE",
+        "type": "mix"
+      },
+      {
+        "id": "mix-leite-em-po",
+        "title": "MIX LEITE EM PO",
+        "type": "mix"
+      },
+      {
+        "id": "mix-marshmelow",
+        "title": "MIX MARSHMELOW",
+        "type": "mix"
+      },
+      {
+        "id": "mix-mm",
+        "title": "MIX MM",
+        "type": "mix"
+      },
+      {
+        "id": "pasta-amendoin",
+        "title": "PASTA DE AMENDOIN",
+        "type": "mix"
+      }
+    ],
+    "boosts": [
+      {
+        "id": "extra-nutella",
+        "name": "Extra Nutella",
+        "price": 3,
+        "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuAybnoISH29HMwq1H4_hFI7ECBM5qSD1LEOWKOwihHCjrIGju2J6htiZDy3nCJR6bNPfOE6FVlFF-9uXCpiegG6OjdCP3rPmF2fXAdYjLBoEs6uBZHTqws7VsFUeOoFV3PYLVuiaJ3gyvky50vYRMirxRsKurH4pAM8Yq4BF4R2OyNidj3WiUgY81I-TUImuJ6uglDaMmhDuHsAz6nIqWfKqiY--fFoWG3ulTHPfqBJSg1_AHpLvELYvKV2y-A3pqLuzr-ZidhkQ_nN",
+        "alt": "close up view of creamy rich chocolate hazelnut spread with a spoon",
+        "type": "boost"
+      },
+      {
+        "id": "mms",
+        "name": "M&Ms",
+        "price": 2.5,
+        "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuDvpK5-dou9F74QgvEP3RqUYzp1Ed7xQEp-yS5wpuPtt-3Z-ikHeXoyDS9zdmqohSJmhfNgVPZm_POg-BKSn7JhjllMf6PUEQJUU9xH7ClfRfSVKIVFRw16Qn-LXWc1HRXxPy5xFrGyRuiHYk3DtHgPJccwglKScDJ2ha56qWJNp_x-DYtnZ4z_WjZvLdId8HqQbq1g-Ngtdr6F-y6osryKQqAIWCBNDdpHiOFqaPD4YCbLQtUwXSqjacukchL5aBYC9yr6dJiJUd1u",
+        "alt": "pile of colorful candy coated chocolate buttons spilling out",
+        "type": "boost"
+      },
+      {
+        "id": "oreo",
+        "name": "Oreo",
+        "price": 2,
+        "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuBOJkqzx1Zk5eWMz0VXtVKdAt1nZNo7fr15WsqhleNF50VYqvb6CU3QadDc3sVSTgQp28SPSHbJqRNvxppOXANDCVzYZR5WRS-9NDtv82QgGxl-_3TGmDqDc--jtmCNMAyTImaoKcHaA8vVf_CEVIpFACpErMjIBW5W5MdfZ5zziO_OCL6ODlfNqeEVzwdPeMZhTiZMyX9Ek2SztwtMM3yKPgmK5KNN0eQTTMencFy7RyyDFUKXzs9z3NfwA9mgYGLri2XiTi_iouMT",
+        "alt": "stack of chocolate sandwich cookies with white cream filling",
+        "type": "boost"
+      }
+    ]
+  },
+  "gelatoBuilder": {
+    "sizes": [
+      {
+        "value": "P",
+        "title": "Gelato P",
+        "price": "R$ 10,00",
+        "limits": {
+          "creams": 2,
+          "toppings": 1,
+          "fruits": 1,
+          "mix": 2
+        },
+        "descriptionLines": [
+          "2 Sabores",
+          "1 Cobertura",
+          "1 Fruta",
+          "2 Mix"
+        ],
+        "type": "gelato-size"
+      },
+      {
+        "value": "M",
+        "title": "Gelato M",
+        "price": "R$ 15,00",
+        "limits": {
+          "creams": 3,
+          "toppings": 2,
+          "fruits": 2,
+          "mix": 3
+        },
+        "descriptionLines": [
+          "3 Sabores",
+          "2 Coberturas",
+          "2 Frutas",
+          "3 Mix"
+        ],
+        "type": "gelato-size"
+      },
+      {
+        "value": "G",
+        "title": "Gelato G",
+        "price": "R$ 20,00",
+        "limits": {
+          "creams": 4,
+          "toppings": 3,
+          "fruits": 3,
+          "mix": 4
+        },
+        "descriptionLines": [
+          "4 Sabores",
+          "3 Coberturas",
+          "3 Frutas",
+          "4 Mix"
+        ],
+        "type": "gelato-size"
+      },
+      {
+        "value": "GG",
+        "title": "Gelato GG",
+        "price": "R$ 25,00",
+        "limits": {
+          "creams": 5,
+          "toppings": 4,
+          "fruits": 4,
+          "mix": 5
+        },
+        "descriptionLines": [
+          "5 Sabores",
+          "4 Coberturas",
+          "4 Frutas",
+          "5 Mix"
+        ],
+        "type": "gelato-size"
+      }
+    ]
+  }
+}

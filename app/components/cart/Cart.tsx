@@ -1,60 +1,57 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useAtomValue, useSetAtom } from 'jotai';
+import {
+    cartItemsAtom,
+    cartSubtotalAtom,
+    removeCartItemAtom,
+    updateCartItemQuantityAtom,
+} from '@/app/state/cartAtoms';
 import CartItem from './CartItem';
 import CartSummary from './CartSummary';
 import CouponInput from './CouponInput';
 
-export interface CartItemType {
-    id: string;
-    name: string;
-    flavor: string;
-    price: number;
-    image: string;
-    quantity: number;
-}
-
 interface CartProps {
-    initialItems?: CartItemType[];
     onCheckout?: () => void;
-    onClose?: () => void;
-    className?: string; // Add className for styling overrides
+    className?: string;
 }
 
 export default function Cart({
-    initialItems = [],
     onCheckout,
-    onClose,
-    className = "pt-24 px-6 max-w-2xl mx-auto pb-32", // Default styling
+    className = "pt-24 px-6 max-w-2xl mx-auto pb-32",
 }: CartProps) {
-    const [items, setItems] = useState<CartItemType[]>(initialItems);
+    const items = useAtomValue(cartItemsAtom);
+    const subtotal = useAtomValue(cartSubtotalAtom);
+    const updateCartItemQuantity = useSetAtom(updateCartItemQuantityAtom);
+    const removeCartItem = useSetAtom(removeCartItemAtom);
     const [discount, setDiscount] = useState(0);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        // Hydration guard: cart is persisted in localStorage, only known client-side.
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setMounted(true);
+    }, []);
 
     const handleQuantityChange = (itemId: string, quantity: number) => {
-        setItems(
-            items.map((item) =>
-                item.id === itemId ? { ...item, quantity } : item
-            )
-        );
+        updateCartItemQuantity({ id: itemId, quantity });
     };
 
     const handleRemoveItem = (itemId: string) => {
-        setItems(items.filter((item) => item.id !== itemId));
+        removeCartItem(itemId);
     };
 
     const handleApplyCoupon = (coupon: string) => {
-        // Aqui você pode adicionar a lógica de validação de cupom
-        console.log('Cupom aplicado:', coupon);
-        // Por exemplo, se coupon === 'DESCONTO10', aplicar 10% de desconto
         if (coupon.toUpperCase() === 'DESCONTO10') {
             setDiscount(subtotal * 0.1);
+        } else {
+            setDiscount(0);
         }
     };
 
-    const subtotal = items.reduce(
-        (total, item) => total + item.price * item.quantity,
-        0
-    );
+    // To prevent hydration mismatch with atomWithStorage
+    if (!mounted) return null;
 
     const isEmpty = items.length === 0;
 
@@ -91,7 +88,6 @@ export default function Cart({
                 {items.map((item) => (
                     <CartItem
                         key={item.id}
-                        id={item.id}
                         name={item.name}
                         flavor={item.flavor}
                         price={item.price}

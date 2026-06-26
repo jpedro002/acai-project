@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  push:
+    branches: [main, firebase]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Lint
+        run: bun run lint
+
+      - name: Typecheck
+        run: bunx tsc --noEmit
+
+  # `next build` is intentionally not run here: it needs Firebase Admin
+  # credentials at module load. Validate the production build locally (or
+  # in a deploy pipeline) with the real environment variables set.
